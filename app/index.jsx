@@ -8,7 +8,7 @@ export default function App() {
   return (
     <SafeAreaView className="bg-primary h-full">
      <ScrollView contentContainerStyle={{height: '100%'}}>
-       <View className="w-full items-center h-full px-4">
+       <View className="w-full justify-center min-h-[85vh] items-center px-4">
         <Image 
         source={images.logo}
         className="w-[130px] h-[84px]"
@@ -16,14 +16,13 @@ export default function App() {
         />
          <Image 
         source={images.cards}
-        className="w-[380px] h-[300px]"
+        className="w-[470px] h-[340px]"
         resizeMode = "contain"
         />
         <View className="relative mt-12">
           <Text className="text-2xl text-white font-bold text-center">Build your dream home with{' '}
-              <Text className="text-secondary-200">Ghar Nirmaan</Text>
-              <Image source={images.path} className="w-[136px] h-[15px] absolute -bottom-8 -right-24" resizeMode = "contain"
-              />
+              <Text className="text-secondary-200 text-center" >Ghar Nirmaan!</Text>
+              {/* <Image source={images.path} className="w-[136px] h-[15px] absolute -bottom-8 -right-24" resizeMode = "contain"/> */}
           </Text>
   
         </View>
@@ -31,9 +30,10 @@ export default function App() {
         Where creativity meets innovatin: embark on a journey of limitless exploration with ghar nirmaan
        </Text>
        <CustomButton title="Continue with email" 
-       handlePress = {()=> router.push('home')}
+       handlePress = {()=> router.push('signin')}
        containerStyles={styles.buttonContainer} 
        />
+     
        </View>
       
      </ScrollView>
