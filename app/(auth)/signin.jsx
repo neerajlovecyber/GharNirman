@@ -18,7 +18,7 @@ const SignIn = () => {
       <View className="w-full  min-h-[82vh] justify-center px-4 my-6 items-center">
          <Image
            source={images.logo}
-           resizeMode='contain' className='w-[115px] [h-35px] '
+           resizeMode='contain' className='w-[195px]'
          />
          <Text className="text-2xl text-white text-semibold mb-5 text-center font-psemibold">Log In</Text>
          <FormField
