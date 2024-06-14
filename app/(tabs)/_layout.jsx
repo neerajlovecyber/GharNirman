@@ -3,17 +3,19 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router'; // Correctly import Tabs and other components
 import { icons } from '../../constants'; // Ensure icons are correctly imported
 
-const TabIcon = ({ icon, color, name, focused }) => {
+const TabIcon = ({ icon, color, name, focused, customStyle }) => {
   return (
     <View style={{ alignItems: 'center', justifyContent: 'center', gap: 1 }}>
       <Image
         source={icon}
         resizeMode="contain"
-        style={{ width: 20, height: 20, tintColor: color }} // Adjust width, height, and tintColor
+        style={[{ width: 20, height: 20, tintColor: color }, customStyle]} // Adjust width, height, and tintColor
       />
-      <Text className={`${focused ? 'font-psemibold' : 'font-pregular'} text-xs`} style={{ color: color }}>
-        {name}
-      </Text>
+      {name ? (
+        <Text className={`${focused ? 'font-psemibold' : 'font-pregular'} text-xs`} style={{ color: color }}>
+          {name}
+        </Text>
+      ) : null}
     </View>
   );
 };
@@ -80,6 +82,7 @@ const TabsLayout = () => {
                 color={color}
                 name="Add"
                 focused={focused}
+                customStyle={styles.addIcon} // Apply custom style to the add icon
               />
             </View>
           ),
@@ -133,10 +136,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addTab: {
-    marginTop: -35, // Adjust the value to move the "Add" tab up
+    marginTop: -58, // Adjust the value to move the "Add" tab up
     alignItems: 'center',
     justifyContent: 'center',
-   
+    borderRadius: 50,
+    width: 55, // Adjust the width
+    height: 55, // Adjust the height
+    backgroundColor: '#161622', // Add a background color for better visibility
+  },
+  addIcon: {
+    width: 46,
+    height: 46,
+    color:'#161622',
+    marginRight:1,
+    marginTop:15
   },
 });
 
