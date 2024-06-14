@@ -31,7 +31,7 @@ const SignUp = () => {
     }
     setIsSubmitting(true);
     try {
-      await signup(form.email, form.password);
+      await signup(form.email, form.password, form.username);
       console.log("Success", "Account created successfully");
       router.push('/signin'); 
       setForm("");
@@ -72,7 +72,7 @@ const SignUp = () => {
           <Image
             source={images.logo}
             resizeMode='contain'
-            className='w-[180px]'
+            className='w-[115px] h-[35px]'
           />
           <Text className="text-2xl text-white text-semibold mb-5 mt-5 text-center font-psemibold">Sign Up</Text>
           <FormField

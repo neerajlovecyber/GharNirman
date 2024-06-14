@@ -6,8 +6,8 @@ import {
   onAuthStateChanged, 
   signOut, 
   GoogleAuthProvider,
-  
-  signInWithCredential
+  signInWithCredential,
+  updateProfile
 } from 'firebase/auth';
 
 const AuthContext = createContext();
@@ -18,10 +18,12 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const signup = async (email, password) => {
+  // Modified signup function to include username
+  const signup = async (email, password, username) => {
     try {
       console.log('Starting signup...');
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: username });
       setCurrentUser(userCredential.user);
       console.log('Signup successful:', userCredential.user);
     } catch (error) {
@@ -29,6 +31,7 @@ export const AuthProvider = ({ children }) => {
       throw error; // Propagate error for handling in the component
     }
   };
+
   const login = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -50,7 +53,6 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
- 
 
   const logout = async () => {
     try {
