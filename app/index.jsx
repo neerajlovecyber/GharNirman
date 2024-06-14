@@ -6,12 +6,13 @@ import { images} from "../constants"
 import CustomButton from '../Components/CustomButton';
 export default function App() {
   return (
+
     <SafeAreaView className="bg-primary h-full">
      <ScrollView contentContainerStyle={{height: '100%'}}>
        <View className="w-full justify-center min-h-[85vh] items-center px-4">
         <Image 
         source={images.logo}
-        className="w-[170px] h-[84px]"
+        className="w-[130px] h-[84px]"
         resizeMode = "contain"
         />
          <Image 
@@ -30,8 +31,8 @@ export default function App() {
         Where creativity meets innovatin: embark on a journey of limitless exploration with ghar nirmaan
        </Text>
        <CustomButton title="Continue with email" 
-       handlePress = {()=> router.push('signin')}
-       containerStyles={styles.buttonContainer} 
+       onPress = {()=> router.push('home')}
+       containerStyle={styles.buttonContainer} 
        />
      
        </View>
