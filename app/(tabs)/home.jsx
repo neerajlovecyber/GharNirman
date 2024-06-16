@@ -4,6 +4,7 @@ import { PieChart, LineChart } from 'react-native-chart-kit';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { images } from '../../constants'; // Ensure these imports are correct
 import * as Progress from 'react-native-progress';
+import CategoriesCard from '../../Components/CategoriesCard';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -86,21 +87,28 @@ const Home = ({ navigation }) => {
                 hasLegend={false}
               />
             </TouchableOpacity>
-             <TouchableOpacity style={styles.budgetButton} className='w-4/5 mt-1 h-6 ml-5 text-secondary flex-column text-center items-center justify-center' onPress={() => setModalVisible(true)}>
+             <TouchableOpacity style={styles.budgetButton} className='w-4/5 mt-1 h-6 ml-7 text-secondary flex-column text-center items-center justify-center' onPress={() => setModalVisible(true)}>
          <Text className='text-xs text-black font-semibold'> {amount === 0 ? 'Add amount' : 'Edit amount'}</Text>     
             </TouchableOpacity>
           </View>
         </View>
         <View style={styles.card} className='h-25 p-5 w-full flex-column justify-between items-center'>
       <View className='flex-row'>
-        <Text className='text-l w-1/2 text-gray-500 text-semibold font-pregular'>Paid Amount</Text>
-        <Text className='text-l w-1/2 text-gray-500 text-semibold font-pregular pl-7'>Unpaid Amount</Text>
+        <View className='w-1/2'>
+        <Text className='text-l  text-gray-500 text-semibold font-pregular'>Paid Amount</Text>
+        <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+        </View>
+        <View className='w-1/2'>
+        <Text className='text-l  text-gray-500 text-semibold font-pregular pl-7'>Unpaid Amount</Text>
+        <Text className='font-psemibold pl-7'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+        </View>
+        
       </View>
       <View className='w-full mt-4'>
         <Progress.Bar 
           progress={0.6} 
           width={290} 
-          height={12} 
+          height={10} 
           color="blue" 
           unfilledColor="black" 
           borderWidth={0} 
@@ -108,11 +116,10 @@ const Home = ({ navigation }) => {
         />
       </View>
     </View>
-        <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>Total Balance & Amount Spent</Text>
+        <View className='pl-3 mt-2'>
+          <Text className='text-primary-200 font-pbold text-xl mb-2'>Categories</Text>
+          <CategoriesCard/>
         </View>
-
-       
 
         <View style={styles.actionsContainer}>
           <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('AddExpense')}>
