@@ -5,7 +5,7 @@ import { images } from '../../constants';
 import FormField from '../../Components/FormField';
 import CustomButton from '../../Components/CustomButton';
 import { Link, useRouter } from 'expo-router';
-import { useAuth } from '../../services/authContext'; // Import the useAuth hook
+import { useAuth } from '../../services/authContext';
 import { showMessage } from 'react-native-flash-message';
 
 const SignIn = () => {
@@ -14,8 +14,8 @@ const SignIn = () => {
     password: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter(); // Use router for navigation
-  const { login } = useAuth(); // Get login function from auth context
+  const router = useRouter();
+  const { login } = useAuth();
 
   const handleSignIn = async () => {
     if (!form.email || !form.password) {
@@ -30,7 +30,7 @@ const SignIn = () => {
     try {
       await login(form.email, form.password);
       console.log("Success", "Signed in successfully");
-      router.push('/home'); 
+      router.push('/home');
       setForm({
         email: '',
         password: '',
@@ -38,7 +38,7 @@ const SignIn = () => {
     } catch (error) {
       showMessage({
         message: "Error",
-        description:"Wrong email or password.",
+        description: "Wrong email or password.",
         type: "danger",
       });
       setForm({
@@ -78,13 +78,12 @@ const SignIn = () => {
             value={form.password}
             handleChangeText={(e) => setForm({ ...form, password: e })}
             otherStyle="mt-7"
-            
           />
           <CustomButton
             title='Log In'
-            containerStyle={styles.buttonStyle} // Corrected prop name
+            containerStyle={styles.buttonStyle}
             isLoading={isSubmitting}
-            onPress={handlePress} // Simplified onPress
+            onPress={handlePress}
           />
           <View className='justify-center pt-5 flex-row gap-2'>
             <Text className='text-md text-gray-100 font-pregular'>Don't have an account?</Text>
