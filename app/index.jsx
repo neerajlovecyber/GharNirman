@@ -31,7 +31,7 @@ export default function App() {
         Where creativity meets innovatin: embark on a journey of limitless exploration with ghar nirmaan
        </Text>
        <CustomButton title="Continue with email" 
-       onPress = {()=> router.push('home')}
+       onPress = {()=> router.push('signin')}
        containerStyle={styles.buttonContainer} 
        />
      
