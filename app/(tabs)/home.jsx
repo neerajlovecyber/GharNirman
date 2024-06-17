@@ -5,8 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { images } from '../../constants'; // Ensure these imports are correct
 import * as Progress from 'react-native-progress';
 import CategoriesCard from '../../Components/CategoriesCard';
-
+import {useAuth} from  '../../services/authContext'
 const screenWidth = Dimensions.get('window').width;
+
 
 const Home = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -49,7 +50,9 @@ const Home = ({ navigation }) => {
   const handlePieChartPress = (data, index) => {
     setSelectedSlice(data);
   };
-
+  const currentUser = useAuth();
+  console.log(currentUser);
+  const displayName = currentUser.currentUser?.displayName ? currentUser.currentUser.displayName.slice(0, 10) : '';
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView className='w-full min-h-[85vh]'>
@@ -63,7 +66,7 @@ const Home = ({ navigation }) => {
             <Image source={images.profile} resizeMode="contain" style={styles.icon} className='border-r-5 w-6 h-4' />
           </TouchableOpacity>
         </View>
-        <Text className='text-2xl text-secondary-200 text-semibold mt-2 ml-5 font-pextrabold'>Hi Tim, Welcome</Text>
+        <Text className='text-2xl text-secondary-200 text-semibold mt-2 ml-5 font-pextrabold'>Hi {displayName}, Welcome</Text>
 
         <View style={styles.card} className='h-44 p-5 flex-row justify-between items-center'>
           <View className='w-1/2'>
@@ -109,8 +112,8 @@ const Home = ({ navigation }) => {
           progress={0.6} 
           width={290} 
           height={10} 
-          color="blue" 
-          unfilledColor="black" 
+          color="lightgreen" 
+          unfilledColor="red" 
           borderWidth={0} 
           borderRadius={5} 
         />
