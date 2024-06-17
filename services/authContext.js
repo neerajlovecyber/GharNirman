@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { auth } from './firebaseServices';
+import { auth } from '../services/firebaseServices';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
@@ -18,17 +19,33 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Modified signup function to include username
+  const saveUserCredentials = async (user) => {
+    try {
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+    } catch (error) {
+      console.error('Error saving user credentials:', error);
+    }
+  };
+
+  const getUserCredentials = async () => {
+    try {
+      const user = await AsyncStorage.getItem('user');
+      return user ? JSON.parse(user) : null;
+    } catch (error) {
+      console.error('Error retrieving user credentials:', error);
+      return null;
+    }
+  };
+
   const signup = async (email, password, username) => {
     try {
-      console.log('Starting signup...');
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: username });
       setCurrentUser(userCredential.user);
-      console.log('Signup successful:', userCredential.user);
+      await saveUserCredentials(userCredential.user);
     } catch (error) {
       console.error('Signup error:', error.message);
-      throw error; // Propagate error for handling in the component
+      throw error;
     }
   };
 
@@ -36,6 +53,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       setCurrentUser(userCredential.user);
+      await saveUserCredentials(userCredential.user);
     } catch (error) {
       throw error;
     }
@@ -44,10 +62,11 @@ export const AuthProvider = ({ children }) => {
   const loginWithGoogle = async () => {
     try {
       await GoogleSigninButton.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn(); // Get user info from Google sign-in
+      const userInfo = await GoogleSignin.signIn();
       const googleCredential = GoogleAuthProvider.credential(userInfo.idToken);
       const { user } = await signInWithCredential(auth, googleCredential);
       setCurrentUser(user);
+      await saveUserCredentials(user);
     } catch (error) {
       console.error('Google sign-in error:', error.message);
       throw error;
@@ -58,16 +77,27 @@ export const AuthProvider = ({ children }) => {
     try {
       await signOut(auth);
       setCurrentUser(null);
+      await AsyncStorage.removeItem('user');
     } catch (error) {
       throw error;
     }
   };
 
   useEffect(() => {
+    const checkAuthState = async () => {
+      const savedUser = await getUserCredentials();
+      if (savedUser) {
+        setCurrentUser(savedUser);
+      }
+      setLoading(false);
+    };
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setLoading(false);
     });
+
+    checkAuthState();
     return unsubscribe;
   }, []);
 
