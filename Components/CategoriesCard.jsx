@@ -98,7 +98,7 @@ export default function CardComponent() {
   };
 
   const renderItem = ({ item }) => (
-    <View style={[styles.card, { backgroundColor: item.color }]} className='flex-row items-center justify-between h-12'>
+    <View style={[styles.card, { backgroundColor: item.color }]} className='flex-row items-center justify-between bg-white-200 h-12'>
       <View className='w-1/2 flex-row justify-between text-center items-center'>
         <Text style={styles.icon} className=''>{item.icon}</Text>
         <Text style={styles.text} className='text-gray-900 font-psemibold'>
