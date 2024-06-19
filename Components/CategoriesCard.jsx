@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
 import icons from '../constants/icons'; // Assuming this is the correct path to your icons
+import CategoryDetailsModal from './CategoryDetailsModal'; // Import the new component
 
 // Sample JSON data
 const jsonData = [
@@ -10,7 +11,11 @@ const jsonData = [
     "total_price": 1200.50,
     "paid": 900.00,
     "icon": "🔨",
-    "color": "#FF5733"
+    "color": "#FF5733",
+    "transactions": [
+      { "date": "2023-06-01", "amount": 300.00 },
+      { "date": "2023-06-15", "amount": 600.00 }
+    ]
   },
   {
     "id": 2,
@@ -18,7 +23,10 @@ const jsonData = [
     "total_price": 1500.00,
     "paid": 1500.00,
     "icon": "🏗️",
-    "color": "#33FF57"
+    "color": "#33FF57",
+    "transactions": [
+      { "date": "2023-05-01", "amount": 1500.00 }
+    ]
   },
   {
     "id": 3,
@@ -26,7 +34,11 @@ const jsonData = [
     "total_price": 800.75,
     "paid": 600.00,
     "icon": "🧱",
-    "color": "#3357FF"
+    "color": "#3357FF",
+    "transactions": [
+      { "date": "2023-04-01", "amount": 300.00 },
+      { "date": "2023-04-15", "amount": 300.00 }
+    ]
   },
   {
     "id": 4,
@@ -34,7 +46,11 @@ const jsonData = [
     "total_price": 2500.00,
     "paid": 2300.00,
     "icon": "🪵",
-    "color": "#FF33A1"
+    "color": "#FF33A1",
+    "transactions": [
+      { "date": "2023-03-01", "amount": 1000.00 },
+      { "date": "2023-03-15", "amount": 1300.00 }
+    ]
   },
   {
     "id": 5,
@@ -42,7 +58,10 @@ const jsonData = [
     "total_price": 1000.00,
     "paid": 800.00,
     "icon": "🎨",
-    "color": "#FF9F33"
+    "color": "#FF9F33",
+    "transactions": [
+      { "date": "2023-02-01", "amount": 800.00 }
+    ]
   },
   {
     "id": 6,
@@ -50,7 +69,11 @@ const jsonData = [
     "total_price": 3000.00,
     "paid": 2500.00,
     "icon": "⚙️",
-    "color": "#33FFF2"
+    "color": "#33FFF2",
+    "transactions": [
+      { "date": "2023-01-01", "amount": 1500.00 },
+      { "date": "2023-01-15", "amount": 1000.00 }
+    ]
   },
   {
     "id": 7,
@@ -58,7 +81,10 @@ const jsonData = [
     "total_price": 750.00,
     "paid": 500.00,
     "icon": "🪟",
-    "color": "#9D33FF"
+    "color": "#9D33FF",
+    "transactions": [
+      { "date": "2023-05-01", "amount": 500.00 }
+    ]
   },
   {
     "id": 8,
@@ -66,7 +92,11 @@ const jsonData = [
     "total_price": 1200.00,
     "paid": 1000.00,
     "icon": "🚰",
-    "color": "#F2FF33"
+    "color": "#F2FF33",
+    "transactions": [
+      { "date": "2023-06-01", "amount": 500.00 },
+      { "date": "2023-06-15", "amount": 500.00 }
+    ]
   },
   {
     "id": 9,
@@ -74,7 +104,11 @@ const jsonData = [
     "total_price": 1800.00,
     "paid": 1400.00,
     "icon": "🔌",
-    "color": "#FF33F2"
+    "color": "#FF33F2",
+    "transactions": [
+      { "date": "2023-07-01", "amount": 900.00 },
+      { "date": "2023-07-15", "amount": 500.00 }
+    ]
   },
   {
     "id": 10,
@@ -82,7 +116,10 @@ const jsonData = [
     "total_price": 500.00,
     "paid": 300.00,
     "icon": "🏖️",
-    "color": "#33FFA8"
+    "color": "#33FFA8",
+    "transactions": [
+      { "date": "2023-08-01", "amount": 300.00 }
+    ]
   }
 ];
 
@@ -92,40 +129,66 @@ const capitalizeFirstLetter = (string) => {
 };
 
 export default function CardComponent() {
+  const [expandedId, setExpandedId] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState({});
+
   const handlePress = (id) => {
-    // Handle button press here, for now just logging the id
-    console.log(`Add button pressed for item id: ${id}`);
+    // Toggle expandedId to show/hide details dropdown
+    setExpandedId(expandedId === id ? null : id);
   };
 
-  const renderItem = ({ item }) => (
-    <View style={[styles.card, { backgroundColor: item.color }]} className='flex-row items-center justify-between bg-white-200 h-12'>
-      <View className='w-1/2 flex-row justify-between text-center items-center'>
-        <Text style={styles.icon} className=''>{item.icon}</Text>
-        <Text style={styles.text} className='text-gray-900 font-psemibold'>
-          {capitalizeFirstLetter(item.category)}
-        </Text>
-      </View>
-      <TouchableOpacity
-        style={styles.iconButton}
-        onPress={() => handlePress(item.id)}
-      >
-        <Image 
-          source={icons.plus}  
-          resizeMode='contain'
-          style={styles.iconImage} 
-          className='w-[115px] h-[35px]' 
-        />
+  const handleCardPress = (item) => {
+    setSelectedCategory(item);
+    setModalVisible(true);
+  };
+
+  const renderItem = ({ item }) => {
+    const isExpanded = expandedId === item.id;
+
+    return (
+      <TouchableOpacity onPress={() => handleCardPress(item)}>
+        <View style={styles.card}>
+          <View style={styles.cardContainer}>
+            <View style={styles.row}>
+              <Text style={styles.icon}>{item.icon}</Text>
+              <Text style={styles.text}>{capitalizeFirstLetter(item.category)}</Text>
+            </View>
+            <TouchableOpacity style={styles.iconButton} onPress={() => handlePress(item.id)}>
+              <Image source={icons.plus} resizeMode='contain' style={styles.iconImage} />
+            </TouchableOpacity>
+          </View>
+          {isExpanded && (
+            <View style={styles.detailsContainer}>
+              <View className='w-1/2'>
+                <Text className='font-pregular'> <Text className='font-psemibold'>Total Price:</Text> ${item.total_price.toFixed(2)}</Text>
+                <Text className='font-pregular'> <Text className='font-psemibold'>Paid:</Text>  ${item.paid.toFixed(2)}</Text>
+              </View>
+              <View className='w-1/2 pl-5 '>
+                <Text className='font-pregular'> <Text className='font-psemibold'>Unpaid:</Text> ${item.total_price.toFixed(2) - item.paid.toFixed(2)}</Text>
+                <Text className='font-pregular'> <Text className='font-psemibold'>Quantity:</Text> ${item.paid.toFixed(2)}</Text>
+              </View>
+            </View>
+          )}
+        </View>
       </TouchableOpacity>
-    </View>
-  );
+    );
+  };
 
   return (
-    <FlatList
-      data={jsonData}
-      keyExtractor={item => item.id.toString()}
-      renderItem={renderItem}
-      contentContainerStyle={styles.container}
-    />
+    <>
+      <FlatList
+        data={jsonData}
+        keyExtractor={item => item.id.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={styles.container}
+      />
+      <CategoryDetailsModal
+        visible={modalVisible}
+        category={selectedCategory}
+        onClose={() => setModalVisible(false)}
+      />
+    </>
   );
 }
 
@@ -133,13 +196,26 @@ const styles = StyleSheet.create({
   container: {
     width: '95%',
   },
-  card: {
+  cardContainer: {
+    width: '100%',
+    paddingLeft: 10,
+    paddingRight: 10,
     borderRadius: 12,
-    padding: 10,
-    marginBottom: 10,
-    elevation: 3,  // Adds a shadow for better visual distinction
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  card: {
+    borderRadius: 12,
+    marginBottom: 10,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  row: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   icon: {
@@ -147,6 +223,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
+    marginLeft: 10,
   },
   iconButton: {
     padding: 10,
@@ -154,5 +231,14 @@ const styles = StyleSheet.create({
   iconImage: {
     width: 24,
     height: 24,
-  }
+  },
+  detailsContainer: {
+    display: "flex",
+    flexDirection: 'row',
+    width: '100%',
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center'
+  },
 });

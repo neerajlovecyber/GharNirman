@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import { Tabs } from 'expo-router'; // Correctly import Tabs and other components
-import { icons } from '../../constants'; // Ensure icons are correctly imported
+import { Tabs } from 'expo-router'; // Ensure correct import from expo-router
+import { icons } from '../../constants'; // Adjust the path to your icons
 
 const TabIcon = ({ icon, color, name, focused, customStyle }) => {
   return (
@@ -9,12 +9,10 @@ const TabIcon = ({ icon, color, name, focused, customStyle }) => {
       <Image
         source={icon}
         resizeMode="contain"
-        style={[{ width: 20, height: 20, tintColor: color }, customStyle]} // Adjust width, height, and tintColor
+        style={[styles.icon, { tintColor: color }, customStyle]} // Adjust width, height, and tintColor
       />
       {name ? (
-        <Text className={`${focused ? 'font-psemibold' : 'font-pregular'} text-xs`} style={{ color: color }}>
-          {name}
-        </Text>
+        <Text style={[styles.label, { color: color }]}>{name}</Text>
       ) : null}
     </View>
   );
@@ -47,7 +45,7 @@ const TabsLayout = () => {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
-              icon={icons.home} // Correct the icon reference
+              icon={icons.home} // Replace with the correct icon reference
               color={color}
               name="Home"
               focused={focused}
@@ -62,7 +60,7 @@ const TabsLayout = () => {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
-              icon={icons.bookmark} // Correct the icon reference
+              icon={icons.bookmark} // Replace with the correct icon reference
               color={color}
               name="History"
               focused={focused}
@@ -70,7 +68,7 @@ const TabsLayout = () => {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name='add'
         options={{
           title: 'Add',
@@ -78,7 +76,7 @@ const TabsLayout = () => {
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.addTab}>
               <TabIcon
-                icon={icons.plus} // Correct the icon reference
+                icon={icons.plus} // Replace with the correct icon reference
                 color={color}
                 name="Add"
                 focused={focused}
@@ -87,7 +85,7 @@ const TabsLayout = () => {
             </View>
           ),
         }}
-      />
+      /> */}
       <Tabs.Screen
         name='dashboard'
         options={{
@@ -95,7 +93,7 @@ const TabsLayout = () => {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
-              icon={icons.search} // Correct the icon reference
+              icon={icons.search} // Replace with the correct icon reference
               color={color}
               name="Dashboard"
               focused={focused}
@@ -110,7 +108,7 @@ const TabsLayout = () => {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
-              icon={icons.profile} // Correct the icon reference
+              icon={icons.profile} // Replace with the correct icon reference
               color={color}
               name="Profile"
               focused={focused}
@@ -123,33 +121,29 @@ const TabsLayout = () => {
 };
 
 const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: '#161622',
-    borderTopWidth: 1,
-    borderTopColor: '#232533',
-    height: 60,
-    flexDirection: 'row',
+  icon: {
+    width: 20,
+    height: 20,
   },
-  tabBarItem: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  label: {
+    fontSize: 12,
+    marginTop: 1,
   },
   addTab: {
-    marginTop: -58, // Adjust the value to move the "Add" tab up
-    alignItems: 'center',
+    position: 'absolute',
+    top: -30,
+    alignSelf: 'center',
+    backgroundColor: '#161622',
+    borderRadius: 25,
+    width: 50,
+    height: 50,
     justifyContent: 'center',
-    borderRadius: 50,
-    width: 55, // Adjust the width
-    height: 55, // Adjust the height
-    backgroundColor: '#161622', // Add a background color for better visibility
+    alignItems: 'center',
+    zIndex: 10,
   },
   addIcon: {
-    width: 46,
-    height: 46,
-    color:'#161622',
-    marginRight:1,
-    marginTop:15
+    width: 24,
+    height: 24,
   },
 });
 
