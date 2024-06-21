@@ -234,12 +234,17 @@ const Home = ({ navigation }) => {
           >
             <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
-          <AddComponent onSubmit={handleAddExpense} onClose={() => setAddComponentVisible(false)} />
+          <AddComponent 
+            categories={categories.map(cat => cat.category)} 
+            onSubmit={handleAddExpense} 
+            onClose={() => setAddComponentVisible(false)} 
+          />
         </View>
       </Modal>
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   safeArea: {

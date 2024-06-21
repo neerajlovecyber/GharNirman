@@ -3,7 +3,7 @@ import { View, TextInput, Text, TouchableOpacity, StyleSheet, Platform } from 'r
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const AddComponent = ({ onClose, onSubmit, selectedCategory }) => {
+const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState(selectedCategory || '');
   const [price, setPrice] = useState('');
@@ -71,17 +71,10 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory }) => {
             onValueChange={(itemValue) => setCategory(itemValue)}
           >
             <Picker.Item label="Select Category" value="" />
-            <Picker.Item label="Bricks" value="bricks" />
-            <Picker.Item label="Cement" value="cement" />
-            <Picker.Item label="Tiles" value="tiles" />
-            <Picker.Item label="Wood" value="wood" />
-            <Picker.Item label="Paints" value="paints" />
-            <Picker.Item label="Steel" value="steel" />
-            <Picker.Item label="Glass" value="glass" />
-            <Picker.Item label="Plumbing" value="plumbing" />
-            <Picker.Item label="Electric" value="electric" />
-            <Picker.Item label="Sand" value="sand" />
-            <Picker.Item label="Custom" value="custom" />
+            {categories.map((cat, index) => (
+              <Picker.Item key={index} label={cat} value={cat} />
+            ))}
+           
           </Picker>
         </View>
         {category === 'custom' && (
@@ -161,6 +154,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
