@@ -3,132 +3,12 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react
 import icons from '../constants/icons'; // Assuming this is the correct path to your icons
 import CategoryDetailsModal from './CategoryDetailsModal'; // Import the new component
 
-// Sample JSON data
-const jsonData = [
-  {
-    "id": 1,
-    "category": "bricks",
-    "total_price": 1200.50,
-    "paid": 900.00,
-    "icon": "🔨",
-    "color": "#FF5733",
-    "transactions": [
-      { "date": "2023-06-01", "amount": 300.00 },
-      { "date": "2023-06-15", "amount": 600.00 }
-    ]
-  },
-  {
-    "id": 2,
-    "category": "cement",
-    "total_price": 1500.00,
-    "paid": 1500.00,
-    "icon": "🏗️",
-    "color": "#33FF57",
-    "transactions": [
-      { "date": "2023-05-01", "amount": 1500.00 }
-    ]
-  },
-  {
-    "id": 3,
-    "category": "tiles",
-    "total_price": 800.75,
-    "paid": 600.00,
-    "icon": "🧱",
-    "color": "#3357FF",
-    "transactions": [
-      { "date": "2023-04-01", "amount": 300.00 },
-      { "date": "2023-04-15", "amount": 300.00 }
-    ]
-  },
-  {
-    "id": 4,
-    "category": "wood",
-    "total_price": 2500.00,
-    "paid": 2300.00,
-    "icon": "🪵",
-    "color": "#FF33A1",
-    "transactions": [
-      { "date": "2023-03-01", "amount": 1000.00 },
-      { "date": "2023-03-15", "amount": 1300.00 }
-    ]
-  },
-  {
-    "id": 5,
-    "category": "paints",
-    "total_price": 1000.00,
-    "paid": 800.00,
-    "icon": "🎨",
-    "color": "#FF9F33",
-    "transactions": [
-      { "date": "2023-02-01", "amount": 800.00 }
-    ]
-  },
-  {
-    "id": 6,
-    "category": "steel",
-    "total_price": 3000.00,
-    "paid": 2500.00,
-    "icon": "⚙️",
-    "color": "#33FFF2",
-    "transactions": [
-      { "date": "2023-01-01", "amount": 1500.00 },
-      { "date": "2023-01-15", "amount": 1000.00 }
-    ]
-  },
-  {
-    "id": 7,
-    "category": "glass",
-    "total_price": 750.00,
-    "paid": 500.00,
-    "icon": "🪟",
-    "color": "#9D33FF",
-    "transactions": [
-      { "date": "2023-05-01", "amount": 500.00 }
-    ]
-  },
-  {
-    "id": 8,
-    "category": "plumbing",
-    "total_price": 1200.00,
-    "paid": 1000.00,
-    "icon": "🚰",
-    "color": "#F2FF33",
-    "transactions": [
-      { "date": "2023-06-01", "amount": 500.00 },
-      { "date": "2023-06-15", "amount": 500.00 }
-    ]
-  },
-  {
-    "id": 9,
-    "category": "electric",
-    "total_price": 1800.00,
-    "paid": 1400.00,
-    "icon": "🔌",
-    "color": "#FF33F2",
-    "transactions": [
-      { "date": "2023-07-01", "amount": 900.00 },
-      { "date": "2023-07-15", "amount": 500.00 }
-    ]
-  },
-  {
-    "id": 10,
-    "category": "sand",
-    "total_price": 500.00,
-    "paid": 300.00,
-    "icon": "🏖️",
-    "color": "#33FFA8",
-    "transactions": [
-      { "date": "2023-08-01", "amount": 300.00 }
-    ]
-  }
-];
-
 // Function to capitalize the first letter of the category
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-export default function CardComponent() {
+export default function CardComponent({ data }) { // Accept data as a prop
   const [expandedId, setExpandedId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({});
@@ -178,7 +58,7 @@ export default function CardComponent() {
   return (
     <>
       <FlatList
-        data={jsonData}
+        data={data} // Use the data prop here
         keyExtractor={item => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.container}

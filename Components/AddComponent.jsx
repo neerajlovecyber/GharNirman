@@ -22,13 +22,14 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory }) => {
     const expenseData = {
       description,
       category: category === 'custom' ? customCategory : category,
-      price,
-      quantity,
+      price: parseFloat(price),
+      quantity: parseFloat(quantity),
       isPaid,
-      totalPrice,
-      purchaseDate,
+      totalPrice: parseFloat(totalPrice),
+      purchaseDate: purchaseDate.toISOString(),
     };
     onSubmit(expenseData);
+    console.log(expenseData);
     resetForm();
   };
 
@@ -70,16 +71,16 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory }) => {
             onValueChange={(itemValue) => setCategory(itemValue)}
           >
             <Picker.Item label="Select Category" value="" />
-            <Picker.Item label="Bricks" value="Bricks" />
-            <Picker.Item label="Cement" value="Cement" />
-            <Picker.Item label="Tiles" value="Tiles" />
-            <Picker.Item label="Wood" value="Wood" />
-            <Picker.Item label="Paints" value="Paints" />
-            <Picker.Item label="Steel" value="Steel" />
-            <Picker.Item label="Glass" value="Glass" />
-            <Picker.Item label="Plumbing" value="Plumbing" />
-            <Picker.Item label="Electric" value="Electric" />
-            <Picker.Item label="Sand" value="Sand" />
+            <Picker.Item label="Bricks" value="bricks" />
+            <Picker.Item label="Cement" value="cement" />
+            <Picker.Item label="Tiles" value="tiles" />
+            <Picker.Item label="Wood" value="wood" />
+            <Picker.Item label="Paints" value="paints" />
+            <Picker.Item label="Steel" value="steel" />
+            <Picker.Item label="Glass" value="glass" />
+            <Picker.Item label="Plumbing" value="plumbing" />
+            <Picker.Item label="Electric" value="electric" />
+            <Picker.Item label="Sand" value="sand" />
             <Picker.Item label="Custom" value="custom" />
           </Picker>
         </View>
@@ -156,7 +157,6 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory }) => {
         <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
           <Text style={[styles.buttonText, { color: '#fff' }]}>Cancel</Text>
         </TouchableOpacity>
-        
       </View>
     </View>
   );

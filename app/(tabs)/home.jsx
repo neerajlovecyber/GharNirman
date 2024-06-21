@@ -1,14 +1,27 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Button, ScrollView, Dimensions, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Dimensions, Image, Button } from 'react-native';
 import { PieChart, LineChart } from 'react-native-chart-kit';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { images } from '../../constants'; // Ensure these imports are correct
 import * as Progress from 'react-native-progress';
 import CategoriesCard from '../../Components/CategoriesCard';
-import { useAuth } from "../../services/authContext"
+import { useAuth } from "../../services/authContext";
 import AddComponent from '../../Components/AddComponent';
+import { db } from '../../services/firebaseServices';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { images } from '../../constants';
 
-const screenWidth = Dimensions.get('window').width;
+const initialCategories = [
+  { id: 1, category: "bricks", total_price: 0, paid: 0, icon: "🔨", color: "#FF5733", transactions: [] },
+  { id: 2, category: "cement", total_price: 0, paid: 0, icon: "🏗️", color: "#33FF57", transactions: [] },
+  { id: 3, category: "tiles", total_price: 0, paid: 0, icon: "🧱", color: "#3357FF", transactions: [] },
+  { id: 4, category: "wood", total_price: 0, paid: 0, icon: "🪵", color: "#FF33A1", transactions: [] },
+  { id: 5, category: "paints", total_price: 0, paid: 0, icon: "🎨", color: "#FF9F33", transactions: [] },
+  { id: 6, category: "steel", total_price: 0, paid: 0, icon: "⚙️", color: "#33FFF2", transactions: [] },
+  { id: 7, category: "glass", total_price: 0, paid: 0, icon: "🪟", color: "#9D33FF", transactions: [] },
+  { id: 8, category: "plumbing", total_price: 0, paid: 0, icon: "🚰", color: "#F2FF33", transactions: [] },
+  { id: 9, category: "electric", total_price: 0, paid: 0, icon: "🔌", color: "#FF33F2", transactions: [] },
+  { id: 10, category: "sand", total_price: 0, paid: 0, icon: "🏖️", color: "#33FFA8", transactions: [] },
+];
 
 const Home = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -16,11 +29,24 @@ const Home = ({ navigation }) => {
   const [amount, setAmount] = useState(0);
   const [selectedSlice, setSelectedSlice] = useState(null);
   const [isAddComponentVisible, setAddComponentVisible] = useState(false);
+  const [categories, setCategories] = useState(initialCategories);
+
+  const currentUser = useAuth();
+  const userId = currentUser.currentUser?.uid;
+  const displayName = currentUser.currentUser?.displayName ? currentUser.currentUser.displayName.slice(0, 20) : '';
+
+  useEffect(() => {
+    if (userId) {
+      initializeUserData(userId);
+    }
+  }, [userId]);
 
   const pieChartData = [
     { name: 'Spent', population: 500, color: '#FF6969', legendFontColor: '#FF6969', legendFontSize: 15 },
     { name: 'Remaining', population: 1500, color: '#3572EF', legendFontColor: '#3572EF', legendFontSize: 15 },
   ];
+
+  const screenWidth = Dimensions.get('window').width;
 
   const lineChartData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
@@ -42,24 +68,62 @@ const Home = ({ navigation }) => {
     },
   };
 
-  const handleAddBudget = () => {
-    const newBudget = parseFloat(budget) || 0; // Parse the new budget value as a float
-    setAmount(newBudget);
-    setModalVisible(false); // Close the modal
-    setBudget(''); // Reset the input field to an empty string
+  const initializeUserData = async (userId) => {
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const docSnap = await getDoc(userDocRef);
+
+      if (!docSnap.exists()) {
+        await setDoc(userDocRef, { categories: initialCategories });
+        setCategories(initialCategories); // Set initial categories if document doesn't exist
+      } else {
+        const userData = docSnap.data();
+        setCategories(userData.categories || initialCategories);
+      }
+    } catch (error) {
+      console.error("Error initializing user data:", error);
+    }
   };
 
-  const handlePieChartPress = (data, index) => {
-    setSelectedSlice(data);
-  };
-  const handleAddExpense = (expenseData) => {
-    console.log(expenseData);
-    setAddComponentVisible(false); // Close the add component modal
-  };
+  const handleAddExpense = async (expenseData) => {
+    if (!userId) return;
 
-  const currentUser = useAuth();
-  console.log(currentUser);
-  const displayName = currentUser.currentUser?.displayName ? currentUser.currentUser.displayName.slice(0, 10) : '';
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const updatedCategories = userData.categories.map(category => {
+          if (category.category === expenseData.category) {
+            const transaction = {
+              description: expenseData.description,
+              price: parseFloat(expenseData.price),
+              quantity: parseFloat(expenseData.quantity),
+              totalPrice: parseFloat(expenseData.totalPrice),
+              isPaid: expenseData.isPaid,
+              purchaseDate: expenseData.purchaseDate,
+            };
+            category.transactions.push(transaction);
+            if (transaction.isPaid) {
+              category.paid += transaction.totalPrice;
+            }
+            category.total_price += transaction.totalPrice;
+          }
+          return category;
+        });
+
+        await updateDoc(userDocRef, { categories: updatedCategories });
+        setCategories(updatedCategories);
+      } else {
+        throw new Error("User document does not exist.");
+      }
+    } catch (error) {
+      console.error("Error adding expense:", error);
+    }
+
+    setAddComponentVisible(false);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -72,7 +136,7 @@ const Home = ({ navigation }) => {
             <Image source={images.profile} resizeMode="contain" style={styles.icon} className='border-r-5 w-6 h-4' />
           </TouchableOpacity>
         </View>
-        <Text className='text-2xl text-secondary-200 text-semibold mt-2 ml-5 font-pextrabold'>Hi Tim, Welcome</Text>
+        <Text className='text-2xl text-secondary-200 text-semibold mt-2 ml-5 font-pextrabold'>Hi {displayName}</Text>
 
         <View style={styles.card} className='h-44 p-5 flex-row justify-between items-center'>
           <View className='w-1/2'>
@@ -127,7 +191,7 @@ const Home = ({ navigation }) => {
         </View>
         <View className='pl-3 mt-2'>
           <Text className='text-primary-200 font-pbold text-xl mb-2'>Categories</Text>
-          <CategoriesCard />
+          <CategoriesCard data={categories}/>
         </View>
 
         {/* Tooltip Modal for Pie Chart Slice */}
@@ -170,7 +234,7 @@ const Home = ({ navigation }) => {
           >
             <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
-          <AddComponent onClose={() => setAddComponentVisible(false)} onSubmit={handleAddExpense} />
+          <AddComponent onSubmit={handleAddExpense} onClose={() => setAddComponentVisible(false)} />
         </View>
       </Modal>
     </SafeAreaView>
