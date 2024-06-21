@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, FlatList, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, FlatList, ScrollView, SafeAreaView } from 'react-native';
 import AddComponent from './AddComponent'; // Adjust the import according to your file structure
+import SingleCategoryComponent from './SingleCategoryComponent'; // Import the new component
 
 const CategoryDetailsModal = ({ visible, category, onClose }) => {
   const [transactions, setTransactions] = useState(category.transactions || []);
@@ -20,19 +21,20 @@ const CategoryDetailsModal = ({ visible, category, onClose }) => {
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>
-            {category.category && category.category.charAt(0).toUpperCase() + category.category.slice(1)} Transactions
-          </Text>
+          <View className='h-14 bg-black-100 w-[100%]'>
+            <Text style={styles.modalTitle} className='text-secondary-200 font-pbold'>
+              {category.icon}
+              {category.category && category.category.charAt(0).toUpperCase() + category.category.slice(1)}
+            </Text>
+          </View>
+          
           <SafeAreaView style={styles.scrollContainer}>
             <ScrollView>
               <FlatList
                 data={transactions}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
-                  <View style={styles.transactionRow}>
-                    <Text style={styles.transactionText}>Date: {item.date}</Text>
-                    <Text style={styles.transactionText}>Amount: ${item.amount}</Text>
-                  </View>
+                  <SingleCategoryComponent date={item.date} amount={item.amount} />
                 )}
               />
             </ScrollView>
@@ -41,19 +43,19 @@ const CategoryDetailsModal = ({ visible, category, onClose }) => {
             <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.fixedButton} onPress={() => setAddModalVisible(true)}>
-          <Text style={styles.fixedButtonText}>+</Text>
-
+            <Text style={styles.fixedButtonText}>+</Text>
           </TouchableOpacity>
         </View>
       </View>
-
-      {addModalVisible && (
-        <AddComponent
-          onClose={() => setAddModalVisible(false)}
-          onSubmit={handleAddTransaction}
-          selectedCategory={category.category}
-        />
-      )}
+      <View className='left-0 bottom-0 w-[100%] absolute'>
+        {addModalVisible && (
+          <AddComponent
+            onClose={() => setAddModalVisible(false)}
+            onSubmit={handleAddTransaction}
+            selectedCategory={category.category}
+          />
+        )}
+      </View>
     </Modal>
   );
 };
@@ -70,16 +72,14 @@ const styles = StyleSheet.create({
     minHeight: '100%',
     backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 20,
     alignItems: 'center',
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     position: 'absolute',
     top: 10,
-    left: 40,
+    left: 20,
   },
   fixedButton: {
     position: 'absolute',
@@ -99,40 +99,17 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     width: '100%',
+    backgroundColor:'#EEEEEE',
     flex: 1,
-    marginTop: 60, // Adjust according to your title position
-    marginBottom: 0, // Adjust according to your button position
-  },
-  transactionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  transactionText: {
-    fontSize: 16,
-  },
-  addButton: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#33FF57',
-    borderRadius: 12,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 16,
+    marginBottom: 0,
+    
   },
   closeButton: {
     position: 'absolute',
     top: 10,
-    right: 10,
-    width: 40,
-    height: 40,
+    right: 15,
+    width: 35,
+    height: 35,
     backgroundColor: '#FF8F00',
     borderRadius: 30,
     justifyContent: 'center',
