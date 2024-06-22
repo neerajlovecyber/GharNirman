@@ -30,6 +30,9 @@ const Home = ({ navigation }) => {
   const [selectedSlice, setSelectedSlice] = useState(null);
   const [isAddComponentVisible, setAddComponentVisible] = useState(false);
   const [categories, setCategories] = useState(initialCategories);
+  const [totalPaid, setTotalPaid] = useState(0);
+  const [totalUnpaid, setTotalUnpaid] = useState(0);
+
 
   const currentUser = useAuth();
   const userId = currentUser.currentUser?.uid;
@@ -41,11 +44,16 @@ const Home = ({ navigation }) => {
     }
   }, [userId]);
 
-  const pieChartData = [
-    { name: 'Spent', population: 500, color: '#FF6969', legendFontColor: '#FF6969', legendFontSize: 15 },
-    { name: 'Remaining', population: 1500, color: '#3572EF', legendFontColor: '#3572EF', legendFontSize: 15 },
-  ];
+  useEffect(() => {
+    // Calculate total paid and unpaid amounts whenever categories change
+    calculatePaidAndUnpaidAmounts();
+  }, [categories]); // Only run when `categories` changes
 
+  const pieChartData = [
+    { name: 'Spent', population: totalPaid || 0, color: '#FF6969', legendFontColor: '#FF6969', legendFontSize: 15 },
+    { name: 'Remaining', population: totalUnpaid || 0, color: '#3572EF', legendFontColor: '#3572EF', legendFontSize: 15 },
+  ];
+  
   const screenWidth = Dimensions.get('window').width;
 
   const lineChartData = {
@@ -62,7 +70,7 @@ const Home = ({ navigation }) => {
     backgroundGradientFrom: '#fb8c00',
     backgroundGradientTo: '#FF6969',
     decimalPlaces: 2,
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    color: (opacity = 1) => `rgba(255, 255, 255,${opacity})`,
     style: {
       borderRadius: 16,
     },
@@ -124,7 +132,30 @@ const Home = ({ navigation }) => {
 
     setAddComponentVisible(false);
   };
+  
 
+  const calculatePaidAndUnpaidAmounts = () => {
+    let paidTotal = 0;
+    let unpaidTotal = 0;
+  
+    categories.forEach(category => {
+      category.transactions.forEach(transaction => {
+        const price = parseFloat(transaction.totalPrice);
+        if (!isNaN(price)) {
+          if (transaction.isPaid) {
+            paidTotal += price;
+          } else {
+            unpaidTotal += price;
+          }
+        }
+      });
+    });
+  
+    setTotalPaid(paidTotal);
+    setTotalUnpaid(unpaidTotal);
+  };
+  
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView className='w-full min-h-[85vh]'>
@@ -169,24 +200,25 @@ const Home = ({ navigation }) => {
         <View style={styles.card} className='h-25 p-5 w-full flex-column justify-between items-center'>
           <View className='flex-row'>
             <View className='w-1/2'>
-              <Text className='text-l text-gray-500 text-semibold font-pregular'>Paid Amount</Text>
-              <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+              <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Paid</Text>
+              <Text className='font-psemibold'>{totalPaid ? totalPaid : 0} {totalPaid === 0 ? '' : 'INR'}</Text>
             </View>
             <View className='w-1/2'>
-              <Text className='text-l text-gray-500 text-semibold font-pregular pl-7'>Unpaid Amount</Text>
-              <Text className='font-psemibold pl-7'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+              <Text className='text-l text-gray-500 text-semibold font-pregular pl-7'>Total Unpaid</Text>
+              <Text className='font-psemibold pl-7'>{totalUnpaid? totalUnpaid:0} {totalUnpaid === 0 ? '' : 'INR'}</Text>
             </View>
           </View>
           <View className='w-full mt-4'>
-            <Progress.Bar
-              progress={0.6}
-              width={290}
+          <Progress.Bar
+              progress={totalPaid !== 0 ? totalPaid / (totalPaid + totalUnpaid) : 0}
+              width={Dimensions.get('window').width - 60}
               height={10}
               color="blue"
               unfilledColor="black"
               borderWidth={0}
               borderRadius={5}
-            />
+          />
+
           </View>
         </View>
         <View className='pl-3 mt-2'>
@@ -388,3 +420,4 @@ const styles = StyleSheet.create({
 });
 
 export default Home;
+

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -8,7 +8,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
   const [category, setCategory] = useState(selectedCategory || '');
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [isPaid, setIsPaid] = useState(true); // True for Paid, False for Unpaid
+  const [isPaid, setIsPaid] = useState(true);
   const [customCategory, setCustomCategory] = useState('');
   const [totalPrice, setTotalPrice] = useState('');
   const [purchaseDate, setPurchaseDate] = useState(new Date());
@@ -19,6 +19,11 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
   }, [selectedCategory]);
 
   const handleSubmit = () => {
+    if (!validateInputs()) {
+      Alert.alert('Invalid Input', 'Please fill in all required fields correctly.');
+      return;
+    }
+
     const expenseData = {
       description,
       category: category === 'custom' ? customCategory : category,
@@ -28,9 +33,22 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
       totalPrice: parseFloat(totalPrice),
       purchaseDate: purchaseDate.toISOString(),
     };
+
     onSubmit(expenseData);
-    console.log(expenseData);
     resetForm();
+  };
+
+  const validateInputs = () => {
+    if (!description || !category || !price || !quantity || !totalPrice) {
+      return false;
+    }
+    if (category === 'custom' && !customCategory) {
+      return false;
+    }
+    if (isNaN(parseFloat(price)) || isNaN(parseFloat(quantity)) || isNaN(parseFloat(totalPrice))) {
+      return false;
+    }
+    return true;
   };
 
   const resetForm = () => {
@@ -74,7 +92,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
             {categories.map((cat, index) => (
               <Picker.Item key={index} label={cat} value={cat} />
             ))}
-           
+            <Picker.Item label="Custom" value="custom" />
           </Picker>
         </View>
         {category === 'custom' && (
@@ -116,7 +134,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
 
       <TouchableOpacity style={styles.datePickerButton} onPress={showDatepicker}>
         <Text style={styles.buttonText}>
-          {purchaseDate.toLocaleDateString()} {/* Display selected date */}
+          {purchaseDate.toLocaleDateString()}
         </Text>
       </TouchableOpacity>
       {showDatePicker && (
@@ -155,7 +173,6 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     marginTop: 35,
@@ -186,7 +203,7 @@ const styles = StyleSheet.create({
   categoryContainer: {
     width: '100%',
     backgroundColor: '#fff',
-    overflow: 'hidden', // Ensures that custom input doesn't affect the layout
+    overflow: 'hidden',
   },
   pickerContainer: {
     borderRadius: 10,
@@ -215,7 +232,6 @@ const styles = StyleSheet.create({
     height: 40,
     paddingHorizontal: 16,
     backgroundColor: '#fff',
-    color:'#000',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -257,7 +273,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: '#444444',
+    color: '#fff',
     fontSize: 16,
   },
 });

@@ -1,20 +1,36 @@
-// SingleCategoryComponent.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const SingleCategoryComponent = ({ description, amount, quantity, date, status }) => {
+const SingleCategoryComponent = ({ description, amount, totalAmount, quantity, date, status }) => {
+  const statusColor = status === 'Paid' ? '#4CAF50' : '#F44336';
+
+  // Function to format date to 'YYYY-MM-DD'
+  const formatDate = (inputDate) => {
+    const dateObj = new Date(inputDate);
+    return `${dateObj.getFullYear()}-${('0' + (dateObj.getMonth() + 1)).slice(-2)}-${('0' + dateObj.getDate()).slice(-2)}`;
+  };
+
+  // Function to truncate description to 25 characters
+  const truncateDescription = (inputDescription) => {
+    if (inputDescription.length > 25) {
+      return inputDescription.slice(0, 25) + '...';
+    }
+    return inputDescription;
+  };
+
   return (
     <View style={styles.transactionRow}>
-      <View>
-        <Text style={[styles.transactionText, styles.boldText]}>Description: {description}</Text>
-        <Text style={styles.transactionText}>Amount: ${amount}</Text>
+      <View style={styles.leftColumn}>
+        <Text style={[styles.transactionText, styles.boldText]}>Description: {truncateDescription(description)}</Text>
+        <Text style={styles.transactionText}>Amount: ${amount.toFixed(2)}</Text>
         <Text style={styles.transactionText}>Quantity: {quantity}</Text>
       </View>
-      <View>
-        <View style={[styles.statusBadge, status === 'Paid' ? styles.paid : styles.unpaid]}>
+      <View style={styles.rightColumn}>
+        <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
           <Text style={styles.statusText}>{status}</Text>
         </View>
-        <Text style={styles.transactionText}>Date: {date}</Text>
+        <Text style={styles.transactionText}>Date: {formatDate(date)}</Text>
+        <Text style={styles.transactionText}>Total: ${totalAmount ? totalAmount.toFixed(2) : 'N/A'}</Text>
       </View>
     </View>
   );
@@ -24,17 +40,24 @@ const styles = StyleSheet.create({
   transactionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '95%',
+    width: '100%',
     backgroundColor: '#fff',
-    margin: 8,
+    marginVertical: 8,
     borderRadius: 10,
-    padding: 8,
+    padding: 10,
+  },
+  leftColumn: {
+    flex: 1,
+    marginRight: 10,
+  },
+  rightColumn: {
+    alignItems: 'flex-end',
   },
   transactionText: {
-    fontSize: 16,
+    fontSize: 14,
   },
   boldText: {
-    fontWeight: '600',
+    fontWeight: '500',
   },
   statusBadge: {
     width: 50,
@@ -42,15 +65,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    position: 'absolute',
-    bottom: -15,
-    right: -12,
-  },
-  paid: {
-    backgroundColor: '#FF8F00',
-  },
-  unpaid: {
-    backgroundColor: '#FF0000',
   },
   statusText: {
     color: '#fff',
