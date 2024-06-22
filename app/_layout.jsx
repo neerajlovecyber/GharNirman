@@ -30,6 +30,7 @@ const RootLayout = () => {
   return (
     <ErrorBoundary>
     <AuthProvider>
+      
             <FlashMessage position="top" />
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />

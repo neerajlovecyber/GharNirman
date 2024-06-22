@@ -1,30 +1,67 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
-import icons from '../constants/icons'; // Assuming this is the correct path to your icons
-import CategoryDetailsModal from './CategoryDetailsModal'; // Import the new component
+import icons from '../constants/icons';
+import CategoryDetailsModal from './CategoryDetailsModal';
 
-// Function to capitalize the first letter of the category
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-export default function CardComponent({ data }) { // Accept data as a prop
+const parseNumber = (value) => {
+  // Return a number if valid, otherwise return NaN
+  const parsedValue = parseFloat(value);
+  return isNaN(parsedValue) ? null : parsedValue;
+};
+
+const calculateTotalPrice = (transactions) => {
+  return transactions.reduce((total, transaction) => {
+    const price = parseNumber(transaction.totalPrice);
+    return total + (price || 0);
+  }, 0);
+};
+
+const calculatePaid = (transactions) => {
+  return transactions.reduce((total, transaction) => {
+    const price = parseNumber(transaction.totalPrice);
+    return transaction.isPaid ? total + (price || 0) : total;
+  }, 0);
+};
+
+const calculateUnpaid = (totalPrice, paid) => {
+  if (totalPrice !== null && paid !== null) {
+    return totalPrice - paid;
+  }
+  return null;
+};
+
+const calculateQuantity = (transactions) => {
+  return transactions.reduce((total, transaction) => {
+    const quantity = parseNumber(transaction.quantity);
+    return total + (quantity || 0);
+  }, 0);
+};
+
+export default function CardComponent({ data }) {
   const [expandedId, setExpandedId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState(null); // Updated to null
 
   const handlePress = (id) => {
-    // Toggle expandedId to show/hide details dropdown
     setExpandedId(expandedId === id ? null : id);
   };
 
   const handleCardPress = (item) => {
-    setSelectedCategory(item);
+    setSelectedCategory(item); // Set the selected category here
     setModalVisible(true);
   };
 
   const renderItem = ({ item }) => {
     const isExpanded = expandedId === item.id;
+
+    const totalPrice = calculateTotalPrice(item.transactions || []);
+    const paid = calculatePaid(item.transactions || []);
+    const unpaid = calculateUnpaid(totalPrice, paid);
+    const quantity = calculateQuantity(item.transactions || []);
 
     return (
       <TouchableOpacity onPress={() => handleCardPress(item)}>
@@ -40,13 +77,21 @@ export default function CardComponent({ data }) { // Accept data as a prop
           </View>
           {isExpanded && (
             <View style={styles.detailsContainer}>
-              <View className='w-1/2'>
-                <Text className='font-pregular'> <Text className='font-psemibold'>Total Price:</Text> ${item.total_price.toFixed(2)}</Text>
-                <Text className='font-pregular'> <Text className='font-psemibold'>Paid:</Text>  ${item.paid.toFixed(2)}</Text>
+              <View style={styles.column}>
+                <Text style={styles.detailText}>
+                  <Text style={styles.boldText}>Total Price:</Text> ${totalPrice !== null ? totalPrice.toFixed(2) : 'N/A'}
+                </Text>
+                <Text style={styles.detailText}>
+                  <Text style={styles.boldText}>Paid:</Text> ${paid !== null ? paid.toFixed(2) : 'N/A'}
+                </Text>
               </View>
-              <View className='w-1/2 pl-5 '>
-                <Text className='font-pregular'> <Text className='font-psemibold'>Unpaid:</Text> ${item.total_price.toFixed(2) - item.paid.toFixed(2)}</Text>
-                <Text className='font-pregular'> <Text className='font-psemibold'>Quantity:</Text> ${item.paid.toFixed(2)}</Text>
+              <View style={styles.column}>
+                <Text style={styles.detailText}>
+                  <Text style={styles.boldText}>Unpaid:</Text> ${unpaid !== null ? unpaid.toFixed(2) : 'N/A'}
+                </Text>
+                <Text style={styles.detailText}>
+                  <Text style={styles.boldText}>Quantity:</Text> {quantity !== null ? quantity.toFixed(2) : 'N/A'}
+                </Text>
               </View>
             </View>
           )}
@@ -58,16 +103,18 @@ export default function CardComponent({ data }) { // Accept data as a prop
   return (
     <>
       <FlatList
-        data={data} // Use the data prop here
+        data={data}
         keyExtractor={item => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.container}
       />
-      <CategoryDetailsModal
-        visible={modalVisible}
-        category={selectedCategory}
-        onClose={() => setModalVisible(false)}
-      />
+      {modalVisible && selectedCategory && ( // Render modal only if modalVisible is true and selectedCategory is not null
+        <CategoryDetailsModal
+          visible={modalVisible}
+          category={selectedCategory}
+          onClose={() => setModalVisible(false)}
+        />
+      )}
     </>
   );
 }
@@ -113,12 +160,21 @@ const styles = StyleSheet.create({
     height: 24,
   },
   detailsContainer: {
-    display: "flex",
     flexDirection: 'row',
     width: '100%',
     padding: 10,
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    textAlign: 'center'
+  },
+  column: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  detailText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  boldText: {
+    fontWeight: 'bold',
   },
 });

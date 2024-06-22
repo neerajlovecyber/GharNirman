@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, FlatList, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
 import AddComponent from './AddComponent'; // Adjust the import according to your file structure
 import SingleCategoryComponent from './SingleCategoryComponent'; // Import the new component
 
@@ -8,9 +8,21 @@ const CategoryDetailsModal = ({ visible, category, onClose }) => {
   const [addModalVisible, setAddModalVisible] = useState(false);
 
   const handleAddTransaction = (transaction) => {
-    setTransactions([...transactions, transaction]);
+    const updatedTransactions = [...transactions, transaction];
+    setTransactions(updatedTransactions);
     setAddModalVisible(false);
   };
+
+  const renderTransactionItem = ({ item }) => (
+    <SingleCategoryComponent
+      description={item.description}
+      amount={item.price}
+      totalAmount = {item.totalPrice}
+      quantity={item.quantity}
+      date={item.purchaseDate}
+      status={item.isPaid ? 'Paid' : 'Unpaid'}
+    />
+  );
 
   return (
     <Modal
@@ -21,24 +33,21 @@ const CategoryDetailsModal = ({ visible, category, onClose }) => {
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <View className='h-14 bg-black-100 w-[100%]'>
-            <Text style={styles.modalTitle} className='text-secondary-200 font-pbold'>
-              {category.icon}
-              {category.category && category.category.charAt(0).toUpperCase() + category.category.slice(1)}
+          <View style={styles.modalTitleContainer}>
+            <Text style={styles.modalTitle}>
+              {category.icon} {category.category && category.category.charAt(0).toUpperCase() + category.category.slice(1)}
             </Text>
           </View>
           
           <SafeAreaView style={styles.scrollContainer}>
-            <ScrollView>
-              <FlatList
-                data={transactions}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                  <SingleCategoryComponent date={item.date} amount={item.amount} />
-                )}
-              />
-            </ScrollView>
+            <FlatList
+              data={transactions}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderTransactionItem}
+              contentContainerStyle={styles.flatListContainer}
+            />
           </SafeAreaView>
+          
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
@@ -47,15 +56,14 @@ const CategoryDetailsModal = ({ visible, category, onClose }) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View className='left-0 bottom-0 w-[100%] absolute'>
-        {addModalVisible && (
-          <AddComponent
-            onClose={() => setAddModalVisible(false)}
-            onSubmit={handleAddTransaction}
-            selectedCategory={category.category}
-          />
-        )}
-      </View>
+      
+      {addModalVisible && (
+        <AddComponent
+          onClose={() => setAddModalVisible(false)}
+          onSubmit={handleAddTransaction}
+          selectedCategory={category.category}
+        />
+      )}
     </Modal>
   );
 };
@@ -74,12 +82,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
   },
+  modalTitleContainer: {
+    height: 60,
+    width: '100%',
+    backgroundColor: '#FF8F00',
+    justifyContent: 'center',
+    paddingLeft: 20,
+  },
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    position: 'absolute',
-    top: 10,
-    left: 20,
+    color: '#fff',
   },
   fixedButton: {
     position: 'absolute',
@@ -98,11 +111,12 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   scrollContainer: {
-    width: '100%',
-    backgroundColor:'#EEEEEE',
     flex: 1,
-    marginBottom: 0,
-    
+    width: '100%',
+  },
+  flatListContainer: {
+    flexGrow: 1,
+    backgroundColor: '#EEEEEE',
   },
   closeButton: {
     position: 'absolute',
