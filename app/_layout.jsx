@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import { AuthProvider } from '../services/authContext'; 
 import FlashMessage from 'react-native-flash-message';
 import ErrorBoundary from '../Components/ErrorBoundary';
+import { UserProvider } from '../services/userContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,7 +31,7 @@ const RootLayout = () => {
   return (
     <ErrorBoundary>
     <AuthProvider>
-      
+    <UserProvider>
             <FlashMessage position="top" />
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -38,6 +39,7 @@ const RootLayout = () => {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
       </Stack>
+      </UserProvider>
     </AuthProvider>
     </ErrorBoundary>
   );

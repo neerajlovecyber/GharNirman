@@ -8,46 +8,35 @@ import { useAuth } from "../../services/authContext";
 import AddComponent from '../../Components/AddComponent';
 import { db } from '../../services/firebaseServices';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { images } from '../../constants';
-
-const initialCategories = [
-  { id: 1, category: "bricks", total_price: 0, paid: 0, icon: "🔨", color: "#FF5733", transactions: [] },
-  { id: 2, category: "cement", total_price: 0, paid: 0, icon: "🏗️", color: "#33FF57", transactions: [] },
-  { id: 3, category: "tiles", total_price: 0, paid: 0, icon: "🧱", color: "#3357FF", transactions: [] },
-  { id: 4, category: "wood", total_price: 0, paid: 0, icon: "🪵", color: "#FF33A1", transactions: [] },
-  { id: 5, category: "paints", total_price: 0, paid: 0, icon: "🎨", color: "#FF9F33", transactions: [] },
-  { id: 6, category: "steel", total_price: 0, paid: 0, icon: "⚙️", color: "#33FFF2", transactions: [] },
-  { id: 7, category: "glass", total_price: 0, paid: 0, icon: "🪟", color: "#9D33FF", transactions: [] },
-  { id: 8, category: "plumbing", total_price: 0, paid: 0, icon: "🚰", color: "#F2FF33", transactions: [] },
-  { id: 9, category: "electric", total_price: 0, paid: 0, icon: "🔌", color: "#FF33F2", transactions: [] },
-  { id: 10, category: "sand", total_price: 0, paid: 0, icon: "🏖️", color: "#33FFA8", transactions: [] },
-];
+import { icons, images } from '../../constants';
+import { useUser } from '../../services/userContext';
 
 const Home = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [budget, setBudget] = useState(0);
+  // const [budget, setBudget] = useState(0);
   const [amount, setAmount] = useState(0);
   const [selectedSlice, setSelectedSlice] = useState(null);
   const [isAddComponentVisible, setAddComponentVisible] = useState(false);
-  const [categories, setCategories] = useState(initialCategories);
-  const [totalPaid, setTotalPaid] = useState(0);
-  const [totalUnpaid, setTotalUnpaid] = useState(0);
+  // const [categories, setCategories] = useState(initialCategories);
+  // const [totalPaid, setTotalPaid] = useState(0);
+  // const [totalUnpaid, setTotalUnpaid] = useState(0);
+  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense } = useUser();
 
 
   const currentUser = useAuth();
   const userId = currentUser.currentUser?.uid;
   const displayName = currentUser.currentUser?.displayName ? currentUser.currentUser.displayName.slice(0, 20) : '';
 
-  useEffect(() => {
-    if (userId) {
-      initializeUserData(userId);
-    }
-  }, [userId]);
+  // useEffect(() => {
+  //   if (userId) {
+  //     initializeUserData(userId);
+  //   }
+  // }, [userId]);
 
-  useEffect(() => {
-    // Calculate total paid and unpaid amounts whenever categories change
-    calculatePaidAndUnpaidAmounts();
-  }, [categories]); // Only run when `categories` changes
+  // useEffect(() => {
+  //   // Calculate total paid and unpaid amounts whenever categories change
+  //   calculatePaidAndUnpaidAmounts();
+  // }, [categories]); // Only run when `categories` changes
 
   const pieChartData = [
     { name: 'Spent', population: totalPaid || 0, color: '#FF6969', legendFontColor: '#FF6969', legendFontSize: 15 },
@@ -76,84 +65,84 @@ const Home = ({ navigation }) => {
     },
   };
 
-  const initializeUserData = async (userId) => {
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      const docSnap = await getDoc(userDocRef);
+  // const initializeUserData = async (userId) => {
+  //   try {
+  //     const userDocRef = doc(db, 'users', userId);
+  //     const docSnap = await getDoc(userDocRef);
 
-      if (!docSnap.exists()) {
-        await setDoc(userDocRef, { categories: initialCategories });
-        setCategories(initialCategories); // Set initial categories if document doesn't exist
-      } else {
-        const userData = docSnap.data();
-        setCategories(userData.categories || initialCategories);
-      }
-    } catch (error) {
-      console.error("Error initializing user data:", error);
-    }
-  };
+  //     if (!docSnap.exists()) {
+  //       await setDoc(userDocRef, { categories: initialCategories });
+  //       setCategories(initialCategories); // Set initial categories if document doesn't exist
+  //     } else {
+  //       const userData = docSnap.data();
+  //       setCategories(userData.categories || initialCategories);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error initializing user data:", error);
+  //   }
+  // };
 
-  const handleAddExpense = async (expenseData) => {
-    if (!userId) return;
+  // const handleAddExpense = async (expenseData) => {
+  //   if (!userId) return;
 
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      const userDoc = await getDoc(userDocRef);
+  //   try {
+  //     const userDocRef = doc(db, 'users', userId);
+  //     const userDoc = await getDoc(userDocRef);
 
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        const updatedCategories = userData.categories.map(category => {
-          if (category.category === expenseData.category) {
-            const transaction = {
-              description: expenseData.description,
-              price: parseFloat(expenseData.price),
-              quantity: parseFloat(expenseData.quantity),
-              totalPrice: parseFloat(expenseData.totalPrice),
-              isPaid: expenseData.isPaid,
-              purchaseDate: expenseData.purchaseDate,
-            };
-            category.transactions.push(transaction);
-            if (transaction.isPaid) {
-              category.paid += transaction.totalPrice;
-            }
-            category.total_price += transaction.totalPrice;
-          }
-          return category;
-        });
+  //     if (userDoc.exists()) {
+  //       const userData = userDoc.data();
+  //       const updatedCategories = userData.categories.map(category => {
+  //         if (category.category === expenseData.category) {
+  //           const transaction = {
+  //             description: expenseData.description,
+  //             price: parseFloat(expenseData.price),
+  //             quantity: parseFloat(expenseData.quantity),
+  //             totalPrice: parseFloat(expenseData.totalPrice),
+  //             isPaid: expenseData.isPaid,
+  //             purchaseDate: expenseData.purchaseDate,
+  //           };
+  //           category.transactions.push(transaction);
+  //           if (transaction.isPaid) {
+  //             category.paid += transaction.totalPrice;
+  //           }
+  //           category.total_price += transaction.totalPrice;
+  //         }
+  //         return category;
+  //       });
 
-        await updateDoc(userDocRef, { categories: updatedCategories });
-        setCategories(updatedCategories);
-      } else {
-        throw new Error("User document does not exist.");
-      }
-    } catch (error) {
-      console.error("Error adding expense:", error);
-    }
+  //       await updateDoc(userDocRef, { categories: updatedCategories });
+  //       setCategories(updatedCategories);
+  //     } else {
+  //       throw new Error("User document does not exist.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error adding expense:", error);
+  //   }
 
-    setAddComponentVisible(false);
-  };
+  //   setAddComponentVisible(false);
+  // };
   
 
-  const calculatePaidAndUnpaidAmounts = () => {
-    let paidTotal = 0;
-    let unpaidTotal = 0;
+  // const calculatePaidAndUnpaidAmounts = () => {
+  //   let paidTotal = 0;
+  //   let unpaidTotal = 0;
   
-    categories.forEach(category => {
-      category.transactions.forEach(transaction => {
-        const price = parseFloat(transaction.totalPrice);
-        if (!isNaN(price)) {
-          if (transaction.isPaid) {
-            paidTotal += price;
-          } else {
-            unpaidTotal += price;
-          }
-        }
-      });
-    });
+  //   categories.forEach(category => {
+  //     category.transactions.forEach(transaction => {
+  //       const price = parseFloat(transaction.totalPrice);
+  //       if (!isNaN(price)) {
+  //         if (transaction.isPaid) {
+  //           paidTotal += price;
+  //         } else {
+  //           unpaidTotal += price;
+  //         }
+  //       }
+  //     });
+  //   });
   
-    setTotalPaid(paidTotal);
-    setTotalUnpaid(unpaidTotal);
-  };
+  //   setTotalPaid(paidTotal);
+  //   setTotalUnpaid(unpaidTotal);
+  // };
   
   
   return (
@@ -222,7 +211,13 @@ const Home = ({ navigation }) => {
           </View>
         </View>
         <View className='pl-3 mt-2'>
+          <View className='flex-row justify-between'>
           <Text className='text-primary-200 font-pbold text-xl mb-2'>Categories</Text>
+        
+          <TouchableOpacity className='mb-2 pr-8'>
+              <Image source={icons.plus} resizeMode='contain' className='w-8 h-8' />
+            </TouchableOpacity>
+          </View>
           <CategoriesCard data={categories}/>
         </View>
 
