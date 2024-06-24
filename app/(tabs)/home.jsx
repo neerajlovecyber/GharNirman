@@ -20,7 +20,7 @@ const Home = ({ navigation }) => {
   // const [categories, setCategories] = useState(initialCategories);
   // const [totalPaid, setTotalPaid] = useState(0);
   // const [totalUnpaid, setTotalUnpaid] = useState(0);
-  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense } = useUser();
+  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense,usedbudget } = useUser();
 
 
   const currentUser = useAuth();
@@ -163,7 +163,7 @@ const Home = ({ navigation }) => {
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Budget</Text>
             <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Spent Amount</Text>
-            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+            <Text className='font-psemibold'>{usedbudget} {usedbudget === 0 ? '' : 'INR'}</Text>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Remaining Amount</Text>
             <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
           </View>
