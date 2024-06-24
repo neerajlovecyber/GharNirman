@@ -3,32 +3,32 @@ import { View, Text, TextInput, FlatList, StyleSheet } from 'react-native';
 import SingleCategoryComponent from '../../Components/SingleCategoryComponent';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
+import { useUser } from '../../services/userContext'; // Import the useUser hook
 
 const History = () => {
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
-  const [transactions, setTransactions] = useState([
-    { description: 'Burger', amount: 10, quantity: 1, date: '2023-06-19', status: 'Paid', category: 'Food' },
-    { description: 'Pizza', amount: 15, quantity: 1, date: '2023-06-19', status: 'Unpaid', category: 'Food' },
-    { description: 'Bus Ticket', amount: 3, quantity: 1, date: '2023-06-17', status: 'Paid', category: 'Transport' },
-    { description: 'Shoes', amount: 50, quantity: 1, date: '2023-06-16', status: 'Paid', category: 'Shopping' },
-    { description: 'Groceries', amount: 30, quantity: 1, date: '2023-06-15', status: 'Unpaid', category: 'Shopping' },
-    { description: 'Shoes', amount: 50, quantity: 1, date: '2023-06-16', status: 'Paid', category: 'Shopping' },
-    { description: 'Groceries', amount: 30, quantity: 1, date: '2023-06-15', status: 'Unpaid', category: 'Shopping' },
-    { description: 'Shoes', amount: 50, quantity: 1, date: '2023-06-16', status: 'Paid', category: 'Shopping' },
-    { description: 'Groceries', amount: 30, quantity: 1, date: '2023-06-15', status: 'Unpaid', category: 'Shopping' },
-    { description: 'Shoes', amount: 50, quantity: 1, date: '2023-06-16', status: 'Paid', category: 'Shopping' },
-    { description: 'Groceries', amount: 30, quantity: 1, date: '2023-06-15', status: 'Unpaid', category: 'Shopping' },
-  ]);
-  const [filteredTransactions, setFilteredTransactions] = useState(transactions);
+  const { categories } = useUser(); // Use the useUser hook to get categories
+
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
 
   useEffect(() => {
     filterTransactions();
-  }, [searchText, selectedCategory, selectedStatus]);
+  }, [searchText, selectedCategory, selectedStatus, categories]);
 
   const filterTransactions = () => {
-    let filtered = transactions;
+    let allTransactions = [];
+
+    // Combine transactions from all categories
+    categories.forEach(category => {
+      allTransactions = allTransactions.concat(category.transactions.map(transaction => ({
+        ...transaction,
+        category: category.category,
+      })));
+    });
+
+    let filtered = allTransactions;
 
     if (searchText) {
       filtered = filtered.filter(transaction =>
@@ -41,7 +41,7 @@ const History = () => {
     }
 
     if (selectedStatus) {
-      filtered = filtered.filter(transaction => transaction.status === selectedStatus);
+      filtered = filtered.filter(transaction => transaction.isPaid === (selectedStatus === 'Paid'));
     }
 
     setFilteredTransactions(filtered);
@@ -49,16 +49,16 @@ const History = () => {
 
   const renderItem = ({ item, index }) => {
     // Render the date if it's the first transaction or the current transaction's date is different from the previous one
-    const showDate = index === 0 || transactions[index - 1].date !== item.date;
+    const showDate = index === 0 || filteredTransactions[index - 1].date !== item.date;
 
     return (
       <View style={styles.transactionContainer}>
         {showDate && <Text style={styles.dateText}>{item.date}</Text>}
         <SingleCategoryComponent
           description={item.description}
-          amount={item.amount}
+          amount={item.totalPrice}
           quantity={item.quantity}
-          status={item.status}
+          status={item.isPaid ? 'Paid' : 'Unpaid'}
         />
       </View>
     );
@@ -67,7 +67,7 @@ const History = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText} className='text-secondary-200'>History</Text>
+        <Text style={styles.headerText} className="text-secondary-200">History</Text>
       </View>
       <TextInput
         style={styles.searchInput}
@@ -82,9 +82,9 @@ const History = () => {
           onValueChange={(itemValue) => setSelectedCategory(itemValue)}
         >
           <Picker.Item label="All Categories" value="" />
-          <Picker.Item label="Food" value="Food" />
-          <Picker.Item label="Transport" value="Transport" />
-          <Picker.Item label="Shopping" value="Shopping" />
+          {categories.map(category => (
+            <Picker.Item key={category.category} label={category.category} value={category.category} />
+          ))}
         </Picker>
         <Picker
           selectedValue={selectedStatus}

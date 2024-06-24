@@ -72,12 +72,12 @@ export default function CardComponent({ data }) {
               <Text style={styles.text}>{capitalizeFirstLetter(item.category)}</Text>
             </View>
             <TouchableOpacity style={styles.iconButton} onPress={() => handlePress(item.id)}>
-              <Image source={icons.plus} resizeMode='contain' style={styles.iconImage} />
+              <Image source={icons.dropdown} resizeMode='contain' style={styles.iconImage} />
             </TouchableOpacity>
           </View>
           {isExpanded && (
             <View style={styles.detailsContainer}>
-              <View style={styles.column}>
+              <View style={styles.column} className='w-1/2 pl-3'>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Total Price:</Text> ${totalPrice !== null ? totalPrice.toFixed(2) : 'N/A'}
                 </Text>
@@ -85,7 +85,7 @@ export default function CardComponent({ data }) {
                   <Text style={styles.boldText}>Paid:</Text> ${paid !== null ? paid.toFixed(2) : 'N/A'}
                 </Text>
               </View>
-              <View style={styles.column}>
+              <View style={styles.column} className='w-1/2  pl-3'>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Unpaid:</Text> ${unpaid !== null ? unpaid.toFixed(2) : 'N/A'}
                 </Text>
@@ -168,10 +168,12 @@ const styles = StyleSheet.create({
   },
   column: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'left',
+    
+    
   },
   detailText: {
-    fontSize: 16,
+    fontSize: 13,
     marginBottom: 5,
   },
   boldText: {

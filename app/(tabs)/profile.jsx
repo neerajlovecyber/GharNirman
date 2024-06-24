@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, Image } from 'react-native';
 import { images } from '../../constants'; // Adjust the path to your icons
 import CustomButton from '../../Components/CustomButton';
 import { useAuth } from '../../services/authContext';
-import {  router, useRouter } from 'expo-router';
+import {  router } from 'expo-router';
 
 const Profile = () => {
   const currentUser = useAuth();
