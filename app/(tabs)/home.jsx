@@ -87,7 +87,7 @@ const Home = ({ navigation }) => {
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Budget</Text>
             <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Spent Amount</Text>
-            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+            <Text className='font-psemibold'>{usedbudget} {usedbudget === 0 ? '' : 'INR'}</Text>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Remaining Amount</Text>
             <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
           </View>
