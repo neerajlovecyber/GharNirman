@@ -9,7 +9,6 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
   const [isPaid, setIsPaid] = useState(true);
-  const [customCategory, setCustomCategory] = useState('');
   const [totalPrice, setTotalPrice] = useState('');
   const [purchaseDate, setPurchaseDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -26,7 +25,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
 
     const expenseData = {
       description,
-      category: category === 'custom' ? customCategory : category,
+      category: category,
       price: parseFloat(price),
       quantity: parseFloat(quantity),
       isPaid,
@@ -42,9 +41,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
     if (!description || !category || !price || !quantity || !totalPrice) {
       return false;
     }
-    if (category === 'custom' && !customCategory) {
-      return false;
-    }
+
     if (isNaN(parseFloat(price)) || isNaN(parseFloat(quantity)) || isNaN(parseFloat(totalPrice))) {
       return false;
     }
@@ -56,7 +53,6 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
     setCategory('');
     setPrice('');
     setQuantity('');
-    setCustomCategory('');
     setTotalPrice('');
     setPurchaseDate(new Date());
     setIsPaid(true);
@@ -92,21 +88,10 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
             {categories.map((cat, index) => (
               <Picker.Item key={index} label={cat} value={cat} />
             ))}
-            <Picker.Item label="Custom" value="custom" />
+            
           </Picker>
         </View>
-        {category === 'custom' && (
-          <View style={styles.customCategoryContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Custom Category"
-              value={customCategory}
-              onChangeText={setCustomCategory}
-            />
-          </View>
-        )}
       </View>
-
       <View style={styles.priceContainer}>
         <TextInput
           style={styles.inputPrice}

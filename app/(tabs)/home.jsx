@@ -10,33 +10,35 @@ import { db } from '../../services/firebaseServices';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { icons, images } from '../../constants';
 import { useUser } from '../../services/userContext';
+import AddCategoryModal from '../../Components/AddCategoryModal';
 
 const Home = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  // const [budget, setBudget] = useState(0);
   const [amount, setAmount] = useState(0);
   const [selectedSlice, setSelectedSlice] = useState(null);
   const [isAddComponentVisible, setAddComponentVisible] = useState(false);
-  // const [categories, setCategories] = useState(initialCategories);
-  // const [totalPaid, setTotalPaid] = useState(0);
-  // const [totalUnpaid, setTotalUnpaid] = useState(0);
-  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense } = useUser();
 
+  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense } = useUser();
+  const [modalCategoryVisible, setCategoryModalVisible] = useState(false);
+
+  const openCategoryModal = () => {
+    setCategoryModalVisible(true);
+  };
+
+  const closeCategoryModal = () => {
+    setCategoryModalVisible(false);
+  };
+
+  const handleAddCategory = (category) => {
+    console.log('New category added:', category);
+    // Handle the new category addition here
+  };
 
   const currentUser = useAuth();
   const userId = currentUser.currentUser?.uid;
   const displayName = currentUser.currentUser?.displayName ? currentUser.currentUser.displayName.slice(0, 20) : '';
 
-  // useEffect(() => {
-  //   if (userId) {
-  //     initializeUserData(userId);
-  //   }
-  // }, [userId]);
-
-  // useEffect(() => {
-  //   // Calculate total paid and unpaid amounts whenever categories change
-  //   calculatePaidAndUnpaidAmounts();
-  // }, [categories]); // Only run when `categories` changes
+  
 
   const pieChartData = [
     { name: 'Spent', population: totalPaid || 0, color: '#FF6969', legendFontColor: '#FF6969', legendFontSize: 15 },
@@ -65,84 +67,6 @@ const Home = ({ navigation }) => {
     },
   };
 
-  // const initializeUserData = async (userId) => {
-  //   try {
-  //     const userDocRef = doc(db, 'users', userId);
-  //     const docSnap = await getDoc(userDocRef);
-
-  //     if (!docSnap.exists()) {
-  //       await setDoc(userDocRef, { categories: initialCategories });
-  //       setCategories(initialCategories); // Set initial categories if document doesn't exist
-  //     } else {
-  //       const userData = docSnap.data();
-  //       setCategories(userData.categories || initialCategories);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error initializing user data:", error);
-  //   }
-  // };
-
-  // const handleAddExpense = async (expenseData) => {
-  //   if (!userId) return;
-
-  //   try {
-  //     const userDocRef = doc(db, 'users', userId);
-  //     const userDoc = await getDoc(userDocRef);
-
-  //     if (userDoc.exists()) {
-  //       const userData = userDoc.data();
-  //       const updatedCategories = userData.categories.map(category => {
-  //         if (category.category === expenseData.category) {
-  //           const transaction = {
-  //             description: expenseData.description,
-  //             price: parseFloat(expenseData.price),
-  //             quantity: parseFloat(expenseData.quantity),
-  //             totalPrice: parseFloat(expenseData.totalPrice),
-  //             isPaid: expenseData.isPaid,
-  //             purchaseDate: expenseData.purchaseDate,
-  //           };
-  //           category.transactions.push(transaction);
-  //           if (transaction.isPaid) {
-  //             category.paid += transaction.totalPrice;
-  //           }
-  //           category.total_price += transaction.totalPrice;
-  //         }
-  //         return category;
-  //       });
-
-  //       await updateDoc(userDocRef, { categories: updatedCategories });
-  //       setCategories(updatedCategories);
-  //     } else {
-  //       throw new Error("User document does not exist.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error adding expense:", error);
-  //   }
-
-  //   setAddComponentVisible(false);
-  // };
-  
-
-  // const calculatePaidAndUnpaidAmounts = () => {
-  //   let paidTotal = 0;
-  //   let unpaidTotal = 0;
-  
-  //   categories.forEach(category => {
-  //     category.transactions.forEach(transaction => {
-  //       const price = parseFloat(transaction.totalPrice);
-  //       if (!isNaN(price)) {
-  //         if (transaction.isPaid) {
-  //           paidTotal += price;
-  //         } else {
-  //           unpaidTotal += price;
-  //         }
-  //       }
-  //     });
-  //   });
-  
-  //   setTotalPaid(paidTotal);
-  //   setTotalUnpaid(unpaidTotal);
-  // };
   
   
   return (
@@ -214,9 +138,14 @@ const Home = ({ navigation }) => {
           <View className='flex-row justify-between'>
           <Text className='text-primary-200 font-pbold text-xl mb-2'>Categories</Text>
         
-          <TouchableOpacity className='mb-2 pr-8'>
+          <TouchableOpacity className='mb-2 pr-8' onPress={openCategoryModal}>
               <Image source={icons.plus} resizeMode='contain' className='w-8 h-8' />
             </TouchableOpacity>
+            <AddCategoryModal
+              visible={modalCategoryVisible}
+              onClose={closeCategoryModal}
+              onAddCategory={handleAddCategory}
+            />
           </View>
           <CategoriesCard data={categories}/>
         </View>
@@ -286,6 +215,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 0,
     display: 'flex',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   container: {
     flex: 1,

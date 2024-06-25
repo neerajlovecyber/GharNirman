@@ -79,15 +79,15 @@ export default function CardComponent({ data }) {
             <View style={styles.detailsContainer}>
               <View style={styles.column} className='w-1/2 pl-3'>
                 <Text style={styles.detailText}>
-                  <Text style={styles.boldText}>Total Price:</Text> ${totalPrice !== null ? totalPrice.toFixed(2) : 'N/A'}
+                  <Text style={styles.boldText}>Total Price:</Text> ₹{totalPrice !== null ? totalPrice.toFixed(2) : 'N/A'}
                 </Text>
                 <Text style={styles.detailText}>
-                  <Text style={styles.boldText}>Paid:</Text> ${paid !== null ? paid.toFixed(2) : 'N/A'}
+                  <Text style={styles.boldText}>Paid:</Text> ₹{paid !== null ? paid.toFixed(2) : 'N/A'}
                 </Text>
               </View>
               <View style={styles.column} className='w-1/2  pl-3'>
                 <Text style={styles.detailText}>
-                  <Text style={styles.boldText}>Unpaid:</Text> ${unpaid !== null ? unpaid.toFixed(2) : 'N/A'}
+                  <Text style={styles.boldText}>Unpaid:</Text> ₹{unpaid !== null ? unpaid.toFixed(2) : 'N/A'}
                 </Text>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Quantity:</Text> {quantity !== null ? quantity.toFixed(2) : 'N/A'}
@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
+   
   },
   row: {
     flexDirection: 'row',
@@ -158,6 +159,7 @@ const styles = StyleSheet.create({
   iconImage: {
     width: 24,
     height: 24,
+    opacity:0.7,
   },
   detailsContainer: {
     flexDirection: 'row',

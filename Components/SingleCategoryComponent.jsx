@@ -22,7 +22,7 @@ const SingleCategoryComponent = ({ description, amount, totalAmount, quantity, d
     <View style={styles.transactionRow}>
       <View style={styles.leftColumn}>
         <Text style={[styles.transactionText, styles.boldText]}>Description: {truncateDescription(description)}</Text>
-        <Text style={styles.transactionText}>Amount: ${amount.toFixed(2)}</Text>
+        <Text style={styles.transactionText}>Amount: ₹{amount.toFixed(2)}</Text>
         <Text style={styles.transactionText}>Quantity: {quantity}</Text>
       </View>
       <View style={styles.rightColumn}>
@@ -30,7 +30,7 @@ const SingleCategoryComponent = ({ description, amount, totalAmount, quantity, d
           <Text style={styles.statusText}>{status}</Text>
         </View>
         <Text style={styles.transactionText}>Date: {formatDate(date)}</Text>
-        <Text style={styles.transactionText}>Total: ${totalAmount ? totalAmount.toFixed(2) : 'N/A'}</Text>
+        <Text style={styles.transactionText}>Total: ₹{totalAmount ? totalAmount.toFixed(2) : 'N/A'}</Text>
       </View>
     </View>
   );
@@ -40,11 +40,12 @@ const styles = StyleSheet.create({
   transactionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
+    width: '95%',
     backgroundColor: '#fff',
     marginVertical: 8,
     borderRadius: 10,
     padding: 10,
+    marginLeft:8,
   },
   leftColumn: {
     flex: 1,
@@ -55,6 +56,7 @@ const styles = StyleSheet.create({
   },
   transactionText: {
     fontSize: 14,
+    opacity:0.8
   },
   boldText: {
     fontWeight: '500',
