@@ -35,6 +35,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
 
     onSubmit(expenseData);
     resetForm();
+    onClose();
   };
 
   const validateInputs = () => {
@@ -174,6 +175,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#fff',
     borderRadius: 10,
+    borderColor: '#ddd',
+
   },
   inputPrice: {
     borderWidth: 1,
@@ -184,6 +187,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#fff',
     borderRadius: 10,
+    borderColor: '#ddd',
+
   },
   categoryContainer: {
     width: '100%',
@@ -197,6 +202,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 45,
     marginBottom: 10,
+    borderColor: '#ddd',
+    opacity:0.6
   },
   customCategoryContainer: {
     width: '100%',
@@ -258,8 +265,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
+    opacity:0.8
   },
 });
 

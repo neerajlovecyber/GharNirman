@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, TextInput, FlatList, StyleSheet } from 'react-native';
 
 const emojis = [
-  '😊', '🚗', '🏠', '🍔', '🎉', '🛍️', '✈️', '📚', '💡', '🛏️', 
-  '🎁', '💊', '🎵', '📷', '🍕'
+ '🏠', '🛠️', '🧱', '🔧', '🪚', '🔨', '🪛', '🪜', '🏗️', '🚧', '🪵', '🪓', '🔩', '🧰', '⚒️'
+
 ];
 
 const AddCategoryModal = ({ visible, onClose, onAddCategory }) => {
@@ -28,14 +28,14 @@ const AddCategoryModal = ({ visible, onClose, onAddCategory }) => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Add Category</Text>
+          <Text style={styles.modalTitle} className='text-secondary-200 font-psemibold'>Add Category</Text>
           <TextInput
             style={styles.input}
             placeholder="Category Name"
             value={categoryName}
             onChangeText={setCategoryName}
           />
-          <Text style={styles.modalTitle}>Select Emoji</Text>
+          <Text style={styles.modalTitle}  className='text-secondary-200 font-psemibold'>Select Emoji</Text>
           <FlatList
             data={emojis}
             renderItem={({ item }) => (
@@ -52,11 +52,11 @@ const AddCategoryModal = ({ visible, onClose, onAddCategory }) => {
             keyExtractor={(item, index) => index.toString()}
             horizontal
           />
-          <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
+          <TouchableOpacity style={styles.addButton} className='bg-secondary-200'onPress={handleAdd}>
             <Text style={styles.addButtonText}>Add</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+          <TouchableOpacity style={styles.cancelButton} className='bg-secondary-200'onPress={onClose}>
+            <Text style={styles.cancelButtonText}>X</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -67,15 +67,18 @@ const AddCategoryModal = ({ visible, onClose, onAddCategory }) => {
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "flex-end",
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: 300,
+    width: "100%",
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 20,
+    paddingBottom:35,
+
+    
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -85,21 +88,21 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    marginTop:10,
+    marginBottom: 5,
   },
   input: {
     width: '100%',
-    padding: 10,
+    padding: 8,
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 5,
-    marginBottom: 20,
+    borderRadius: 10,
+    
   },
   emoji: {
     padding: 10,
     margin: 5,
-    borderRadius: 5,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#ddd',
     alignItems: 'center',
@@ -113,8 +116,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   addButton: {
-    backgroundColor: '#3572EF',
-    padding: 10,
+    paddingHorizontal:50,
+    paddingVertical:10,
+    
     borderRadius: 5,
     marginTop: 10,
   },
@@ -124,10 +128,19 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     marginTop: 10,
+    position:'absolute',
+    width:30,
+    height:30,
+   justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius:50,
+    top:1,
+    right:10,
   },
   cancelButtonText: {
-    color: '#3572EF',
-    fontSize: 16,
+    fontSize: 14,
+    fontWeight:'bold',
+    color:'#fff'
   },
 });
 

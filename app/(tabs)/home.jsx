@@ -18,7 +18,7 @@ const Home = ({ navigation }) => {
   const [selectedSlice, setSelectedSlice] = useState(null);
   const [isAddComponentVisible, setAddComponentVisible] = useState(false);
 
-  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense } = useUser();
+  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense, usedbudget} = useUser();
   const [modalCategoryVisible, setCategoryModalVisible] = useState(false);
 
   const openCategoryModal = () => {
@@ -59,7 +59,7 @@ const Home = ({ navigation }) => {
   const chartConfig = {
     backgroundColor: '#3572EF',
     backgroundGradientFrom: '#fb8c00',
-    backgroundGradientTo: '#FF6969',
+    backgroundGradientTo: '#A0DEFF',
     decimalPlaces: 2,
     color: (opacity = 1) => `rgba(255, 255, 255,${opacity})`,
     style: {
@@ -85,14 +85,14 @@ const Home = ({ navigation }) => {
         <View style={styles.card} className='h-44 p-5 flex-row justify-between items-center'>
           <View className='w-1/2'>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Budget</Text>
-            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : '₹'}</Text>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Spent Amount</Text>
-            <Text className='font-psemibold'>{usedbudget} {usedbudget === 0 ? '' : 'INR'}</Text>
+            <Text className='font-psemibold'>{usedbudget} {usedbudget === 0 ? '' : '₹'}</Text>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Remaining Amount</Text>
-            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : '₹'}</Text>
           </View>
           <View className='w-1/2'>
-            <TouchableOpacity onPress={() => handlePieChartPress(pieChartData[0], 0)}>
+            <TouchableOpacity onPress={()=>{}}>
               <PieChart
                 data={pieChartData}
                 width={screenWidth}
@@ -105,7 +105,7 @@ const Home = ({ navigation }) => {
               />
             </TouchableOpacity>
             <TouchableOpacity style={styles.budgetButton} className='w-4/5 mt-1 h-6 ml-7 text-secondary flex-column text-center items-center justify-center' onPress={() => setModalVisible(true)}>
-              <Text className='text-xs text-black font-semibold'>{amount === 0 ? 'Add amount' : 'Edit amount'}</Text>
+              <Text className='text-xs text-black font-semibold'>{amount === 0 ? '+ Add amount' : 'Edit amount'}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -114,20 +114,20 @@ const Home = ({ navigation }) => {
           <View className='flex-row'>
             <View className='w-1/2'>
               <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Paid</Text>
-              <Text className='font-psemibold'>{totalPaid ? totalPaid : 0} {totalPaid === 0 ? '' : 'INR'}</Text>
+              <Text className='font-psemibold'>{totalPaid ? totalPaid : 0} {totalPaid === 0 ? '' : '₹'}</Text>
             </View>
             <View className='w-1/2'>
               <Text className='text-l text-gray-500 text-semibold font-pregular pl-7'>Total Unpaid</Text>
-              <Text className='font-psemibold pl-7'>{totalUnpaid? totalUnpaid:0} {totalUnpaid === 0 ? '' : 'INR'}</Text>
+              <Text className='font-psemibold pl-7'>{totalUnpaid? totalUnpaid:0} {totalUnpaid === 0 ? '' : '₹'}</Text>
             </View>
           </View>
           <View className='w-full mt-4'>
           <Progress.Bar
               progress={totalPaid !== 0 ? totalPaid / (totalPaid + totalUnpaid) : 0}
               width={Dimensions.get('window').width - 60}
-              height={10}
-              color="blue"
-              unfilledColor="black"
+              height={8}
+              color="#5AB2FF"
+              unfilledColor="#CAF4FF"
               borderWidth={0}
               borderRadius={5}
           />
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: '65%',
+    height: '60%',
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
