@@ -90,6 +90,8 @@ const History = () => {
         onChangeText={setSearchText}
       />
       <View style={styles.filterRow}>
+      <View className="rounded-lg bg-white w-1/2 m-0 p-0">
+
         <Picker
           selectedValue={selectedCategory}
           style={styles.picker}
@@ -100,8 +102,9 @@ const History = () => {
             <Picker.Item key={category.category} label={category.category} value={category.category} />
           ))}
         </Picker>
-
-        <Picker
+        </View>
+          <View className="rounded-lg bg-white w-[47%] ml-2 p-0">
+        <Picker 
           selectedValue={selectedStatus}
           style={styles.picker}
           onValueChange={(itemValue) => setSelectedStatus(itemValue)}
@@ -109,7 +112,7 @@ const History = () => {
           <Picker.Item label="All Status" value="" />
           <Picker.Item label="Paid" value="Paid" />
           <Picker.Item label="Unpaid" value="Unpaid" />
-        </Picker>
+        </Picker></View>
       </View>
       <FlatList
         data={filteredTransactions}
@@ -137,24 +140,25 @@ const styles = StyleSheet.create({
   
   },
   searchInput: {
-    height: 40,
-    borderColor: 'gray',
+    height: 50,
+    borderColor: '#ddd',
+    backgroundColor:'#fff',
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 12,
     paddingHorizontal: 10,
-    margin: 8,
+    margin: 10,
+    marginTop:15
   },
   filterRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
+    padding:10
   },
   picker: {
-    width: '43%',
-    marginRight:20,
-    margin:9,
-    backgroundColor: 'white',
-    borderRadius: 8, 
+    width: '100%',
+
+    
   },
   transactionContainer: {
     marginBottom: 10,
