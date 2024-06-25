@@ -3,31 +3,40 @@ import { View, Text, TextInput, FlatList, StyleSheet } from 'react-native';
 import SingleCategoryComponent from '../../Components/SingleCategoryComponent';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
-import { useUser } from '../../services/userContext'; // Import the useUser hook
+import { useUser } from '../../services/userContext';
 
 const History = () => {
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
-  const { categories } = useUser(); // Use the useUser hook to get categories
-
+  const { categories } = useUser();
   const [filteredTransactions, setFilteredTransactions] = useState([]);
 
   useEffect(() => {
+    console.log("Effect triggered");
     filterTransactions();
   }, [searchText, selectedCategory, selectedStatus, categories]);
 
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+  
   const filterTransactions = () => {
+    console.log("Filtering transactions...");
     let allTransactions = [];
-
-    // Combine transactions from all categories
     categories.forEach(category => {
       allTransactions = allTransactions.concat(category.transactions.map(transaction => ({
         ...transaction,
         category: category.category,
       })));
     });
+    console.log("All transactions:", allTransactions);
 
+    // Sort transactions by purchaseDate in descending order
+    allTransactions.sort((a, b) => new Date(b.purchaseDate) - new Date(a.purchaseDate));
+    console.log("Sorted transactions:", allTransactions);
+
+    // Apply filters
     let filtered = allTransactions;
 
     if (searchText) {
@@ -35,29 +44,34 @@ const History = () => {
         transaction.description.toLowerCase().includes(searchText.toLowerCase())
       );
     }
+    console.log("Filtered by searchText:", filtered);
 
-    if (selectedCategory) {
+    if (selectedCategory !== "") {
       filtered = filtered.filter(transaction => transaction.category === selectedCategory);
     }
+    console.log("Filtered by selectedCategory:", filtered);
 
-    if (selectedStatus) {
+    if (selectedStatus === "Paid" || selectedStatus === "Unpaid") {
       filtered = filtered.filter(transaction => transaction.isPaid === (selectedStatus === 'Paid'));
     }
+    console.log("Filtered by selectedStatus:", filtered);
 
     setFilteredTransactions(filtered);
   };
 
   const renderItem = ({ item, index }) => {
-    // Render the date if it's the first transaction or the current transaction's date is different from the previous one
-    const showDate = index === 0 || filteredTransactions[index - 1].date !== item.date;
+    console.log("Rendering item:", item);
+    const showDate = index === 0 || filteredTransactions[index - 1].purchaseDate !== item.purchaseDate;
 
     return (
       <View style={styles.transactionContainer}>
-        {showDate && <Text style={styles.dateText}>{item.date}</Text>}
+        {showDate && <Text style={styles.dateText}>{capitalizeFirstLetter(item.category)}</Text>}
         <SingleCategoryComponent
           description={item.description}
-          amount={item.totalPrice}
+          amount={item.price}
+          totalAmount={item.totalPrice}
           quantity={item.quantity}
+          date={item.purchaseDate}
           status={item.isPaid ? 'Paid' : 'Unpaid'}
         />
       </View>
@@ -67,7 +81,7 @@ const History = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText} className="text-secondary-200">History</Text>
+        <Text style={styles.headerText} className='text-secondary-200'>History</Text>
       </View>
       <TextInput
         style={styles.searchInput}
@@ -86,6 +100,7 @@ const History = () => {
             <Picker.Item key={category.category} label={category.category} value={category.category} />
           ))}
         </Picker>
+
         <Picker
           selectedValue={selectedStatus}
           style={styles.picker}
@@ -119,6 +134,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
+  
   },
   searchInput: {
     height: 40,
@@ -134,16 +150,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   picker: {
-    height: 40,
-    width: '48%',
+    width: '43%',
+    marginRight:20,
+    margin:9,
+    backgroundColor: 'white',
+    borderRadius: 8, 
   },
   transactionContainer: {
     marginBottom: 10,
   },
   dateText: {
-    fontSize: 14,
+    fontSize: 15,
     color: 'gray',
-    marginBottom: 5,
+    marginBottom: 3,
     marginLeft: 10,
   },
 });

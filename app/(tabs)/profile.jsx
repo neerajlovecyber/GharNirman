@@ -9,7 +9,7 @@ const Profile = () => {
   const currentUser = useAuth();
   const userId = currentUser.currentUser?.uid;
   const displayName = currentUser.currentUser?.displayName ? currentUser.currentUser.displayName.slice(0, 20) : '';
-  const displayEmail = currentUser.currentUser?.email ? currentUser.currentUser.email.slice(0, 20) : '';
+  const displayEmail = currentUser.currentUser?.email ? currentUser.currentUser.email.slice(0, 30) : '';
 
   const handleLogout = () => {
    

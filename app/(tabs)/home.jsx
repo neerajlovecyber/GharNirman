@@ -10,33 +10,35 @@ import { db } from '../../services/firebaseServices';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { icons, images } from '../../constants';
 import { useUser } from '../../services/userContext';
+import AddCategoryModal from '../../Components/AddCategoryModal';
 
 const Home = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  // const [budget, setBudget] = useState(0);
   const [amount, setAmount] = useState(0);
   const [selectedSlice, setSelectedSlice] = useState(null);
   const [isAddComponentVisible, setAddComponentVisible] = useState(false);
-  // const [categories, setCategories] = useState(initialCategories);
-  // const [totalPaid, setTotalPaid] = useState(0);
-  // const [totalUnpaid, setTotalUnpaid] = useState(0);
-  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense } = useUser();
 
+  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense, usedbudget} = useUser();
+  const [modalCategoryVisible, setCategoryModalVisible] = useState(false);
+
+  const openCategoryModal = () => {
+    setCategoryModalVisible(true);
+  };
+
+  const closeCategoryModal = () => {
+    setCategoryModalVisible(false);
+  };
+
+  const handleAddCategory = (category) => {
+    console.log('New category added:', category);
+    // Handle the new category addition here
+  };
 
   const currentUser = useAuth();
   const userId = currentUser.currentUser?.uid;
   const displayName = currentUser.currentUser?.displayName ? currentUser.currentUser.displayName.slice(0, 20) : '';
 
-  // useEffect(() => {
-  //   if (userId) {
-  //     initializeUserData(userId);
-  //   }
-  // }, [userId]);
-
-  // useEffect(() => {
-  //   // Calculate total paid and unpaid amounts whenever categories change
-  //   calculatePaidAndUnpaidAmounts();
-  // }, [categories]); // Only run when `categories` changes
+  
 
   const pieChartData = [
     { name: 'Spent', population: totalPaid || 0, color: '#FF6969', legendFontColor: '#FF6969', legendFontSize: 15 },
@@ -57,7 +59,7 @@ const Home = ({ navigation }) => {
   const chartConfig = {
     backgroundColor: '#3572EF',
     backgroundGradientFrom: '#fb8c00',
-    backgroundGradientTo: '#FF6969',
+    backgroundGradientTo: '#A0DEFF',
     decimalPlaces: 2,
     color: (opacity = 1) => `rgba(255, 255, 255,${opacity})`,
     style: {
@@ -65,84 +67,6 @@ const Home = ({ navigation }) => {
     },
   };
 
-  // const initializeUserData = async (userId) => {
-  //   try {
-  //     const userDocRef = doc(db, 'users', userId);
-  //     const docSnap = await getDoc(userDocRef);
-
-  //     if (!docSnap.exists()) {
-  //       await setDoc(userDocRef, { categories: initialCategories });
-  //       setCategories(initialCategories); // Set initial categories if document doesn't exist
-  //     } else {
-  //       const userData = docSnap.data();
-  //       setCategories(userData.categories || initialCategories);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error initializing user data:", error);
-  //   }
-  // };
-
-  // const handleAddExpense = async (expenseData) => {
-  //   if (!userId) return;
-
-  //   try {
-  //     const userDocRef = doc(db, 'users', userId);
-  //     const userDoc = await getDoc(userDocRef);
-
-  //     if (userDoc.exists()) {
-  //       const userData = userDoc.data();
-  //       const updatedCategories = userData.categories.map(category => {
-  //         if (category.category === expenseData.category) {
-  //           const transaction = {
-  //             description: expenseData.description,
-  //             price: parseFloat(expenseData.price),
-  //             quantity: parseFloat(expenseData.quantity),
-  //             totalPrice: parseFloat(expenseData.totalPrice),
-  //             isPaid: expenseData.isPaid,
-  //             purchaseDate: expenseData.purchaseDate,
-  //           };
-  //           category.transactions.push(transaction);
-  //           if (transaction.isPaid) {
-  //             category.paid += transaction.totalPrice;
-  //           }
-  //           category.total_price += transaction.totalPrice;
-  //         }
-  //         return category;
-  //       });
-
-  //       await updateDoc(userDocRef, { categories: updatedCategories });
-  //       setCategories(updatedCategories);
-  //     } else {
-  //       throw new Error("User document does not exist.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error adding expense:", error);
-  //   }
-
-  //   setAddComponentVisible(false);
-  // };
-  
-
-  // const calculatePaidAndUnpaidAmounts = () => {
-  //   let paidTotal = 0;
-  //   let unpaidTotal = 0;
-  
-  //   categories.forEach(category => {
-  //     category.transactions.forEach(transaction => {
-  //       const price = parseFloat(transaction.totalPrice);
-  //       if (!isNaN(price)) {
-  //         if (transaction.isPaid) {
-  //           paidTotal += price;
-  //         } else {
-  //           unpaidTotal += price;
-  //         }
-  //       }
-  //     });
-  //   });
-  
-  //   setTotalPaid(paidTotal);
-  //   setTotalUnpaid(unpaidTotal);
-  // };
   
   
   return (
@@ -161,14 +85,14 @@ const Home = ({ navigation }) => {
         <View style={styles.card} className='h-44 p-5 flex-row justify-between items-center'>
           <View className='w-1/2'>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Budget</Text>
-            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : '₹'}</Text>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Spent Amount</Text>
-            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+            <Text className='font-psemibold'>{usedbudget} {usedbudget === 0 ? '' : '₹'}</Text>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Remaining Amount</Text>
-            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : 'INR'}</Text>
+            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : '₹'}</Text>
           </View>
           <View className='w-1/2'>
-            <TouchableOpacity onPress={() => handlePieChartPress(pieChartData[0], 0)}>
+            <TouchableOpacity onPress={()=>{}}>
               <PieChart
                 data={pieChartData}
                 width={screenWidth}
@@ -181,7 +105,7 @@ const Home = ({ navigation }) => {
               />
             </TouchableOpacity>
             <TouchableOpacity style={styles.budgetButton} className='w-4/5 mt-1 h-6 ml-7 text-secondary flex-column text-center items-center justify-center' onPress={() => setModalVisible(true)}>
-              <Text className='text-xs text-black font-semibold'>{amount === 0 ? 'Add amount' : 'Edit amount'}</Text>
+              <Text className='text-xs text-black font-semibold'>{amount === 0 ? '+ Add amount' : 'Edit amount'}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -190,20 +114,20 @@ const Home = ({ navigation }) => {
           <View className='flex-row'>
             <View className='w-1/2'>
               <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Paid</Text>
-              <Text className='font-psemibold'>{totalPaid ? totalPaid : 0} {totalPaid === 0 ? '' : 'INR'}</Text>
+              <Text className='font-psemibold'>{totalPaid ? totalPaid : 0} {totalPaid === 0 ? '' : '₹'}</Text>
             </View>
             <View className='w-1/2'>
               <Text className='text-l text-gray-500 text-semibold font-pregular pl-7'>Total Unpaid</Text>
-              <Text className='font-psemibold pl-7'>{totalUnpaid? totalUnpaid:0} {totalUnpaid === 0 ? '' : 'INR'}</Text>
+              <Text className='font-psemibold pl-7'>{totalUnpaid? totalUnpaid:0} {totalUnpaid === 0 ? '' : '₹'}</Text>
             </View>
           </View>
           <View className='w-full mt-4'>
           <Progress.Bar
               progress={totalPaid !== 0 ? totalPaid / (totalPaid + totalUnpaid) : 0}
               width={Dimensions.get('window').width - 60}
-              height={10}
-              color="blue"
-              unfilledColor="black"
+              height={8}
+              color="#5AB2FF"
+              unfilledColor="#CAF4FF"
               borderWidth={0}
               borderRadius={5}
           />
@@ -214,9 +138,14 @@ const Home = ({ navigation }) => {
           <View className='flex-row justify-between'>
           <Text className='text-primary-200 font-pbold text-xl mb-2'>Categories</Text>
         
-          <TouchableOpacity className='mb-2 pr-8'>
+          <TouchableOpacity className='mb-2 pr-8' onPress={openCategoryModal}>
               <Image source={icons.plus} resizeMode='contain' className='w-8 h-8' />
             </TouchableOpacity>
+            <AddCategoryModal
+              visible={modalCategoryVisible}
+              onClose={closeCategoryModal}
+              onAddCategory={handleAddCategory}
+            />
           </View>
           <CategoriesCard data={categories}/>
         </View>
@@ -286,6 +215,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 0,
     display: 'flex',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   container: {
     flex: 1,
@@ -382,7 +316,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: '65%',
+    height: '60%',
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

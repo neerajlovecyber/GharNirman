@@ -25,7 +25,7 @@ export const UserProvider = ({ children }) => {
   const [totalUnpaid, setTotalUnpaid] = useState(0);
   const { currentUser } = useAuth();
   const userId = currentUser?.uid;
-
+const [usedbudget,setusedbuget] =useState(0);
   useEffect(() => {
     if (userId) {
       initializeUserData(userId);
@@ -35,7 +35,9 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     calculatePaidAndUnpaidAmounts();
   }, [categories]);
-
+useEffect(()=> {
+  calculatetotalbudgetspend();
+},[categories]);
   const initializeUserData = async (userId) => {
     try {
       const userDocRef = doc(db, 'users', userId);
@@ -51,6 +53,20 @@ export const UserProvider = ({ children }) => {
     } catch (error) {
       console.error("Error initializing user data:", error);
     }
+  };
+  const calculatetotalbudgetspend = () => {
+    let spentamount = 0;
+    categories.forEach(category => {
+      category.transactions.forEach(transaction => {
+        const price = parseFloat(transaction.totalPrice);
+        if (!isNaN(price)) {
+          spentamount += price;
+        }
+      });
+    });
+  
+    setusedbuget(spentamount);
+ 
   };
 
   const calculatePaidAndUnpaidAmounts = () => {
@@ -113,7 +129,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense }}>
+    <UserContext.Provider value={{ categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense,usedbudget}}>
       {children}
     </UserContext.Provider>
   );
