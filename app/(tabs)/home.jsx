@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Dimensions, Image, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Dimensions, Image, Button, TextInput } from 'react-native';
 import { PieChart, LineChart } from 'react-native-chart-kit';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Progress from 'react-native-progress';
@@ -17,7 +17,7 @@ const Home = ({ navigation }) => {
   const [amount, setAmount] = useState(0);
   const [selectedSlice, setSelectedSlice] = useState(null);
   const [isAddComponentVisible, setAddComponentVisible] = useState(false);
-
+  const [budgetInput, setBudgetInput] = useState('');
   const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense, usedbudget} = useUser();
   const [modalCategoryVisible, setCategoryModalVisible] = useState(false);
 
@@ -66,6 +66,15 @@ const Home = ({ navigation }) => {
       borderRadius: 16,
     },
   };
+  const handleSaveBudget = () => {
+    const budgetValue = parseFloat(budgetInput);
+    if (!isNaN(budgetValue)) {
+      setAmount(budgetValue);
+      setBudget(budgetValue);
+      setModalVisible(false);
+      setBudgetInput('');
+    }
+  };
 
   
   
@@ -104,9 +113,11 @@ const Home = ({ navigation }) => {
                 hasLegend={false}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.budgetButton} className='w-4/5 mt-1 h-6 ml-7 text-secondary flex-column text-center items-center justify-center' onPress={() => setModalVisible(true)}>
-              <Text className='text-xs text-black font-semibold'>{amount === 0 ? '+ Add amount' : 'Edit amount'}</Text>
-            </TouchableOpacity>
+            <TouchableOpacity style={styles.budgetButton}className='w-4/5 mt-1 h-6 ml-7 text-secondary flex-column text-center items-center justify-center'
+              onPress={() => setModalVisible(true)} // Open modal
+             >
+  <Text className='text-xs text-black font-semibold'>{amount === 0 ? '+ Add amount' : 'Edit amount'}</Text>
+</TouchableOpacity>
           </View>
         </View>
 
@@ -197,6 +208,31 @@ const Home = ({ navigation }) => {
           />
         </View>
       </Modal>
+      {/* Budget Modal */}
+<Modal
+  animationType="slide"
+  transparent={true}
+  visible={modalVisible}
+  onRequestClose={() => setModalVisible(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContainer}>
+      <Text style={styles.modalTitle}>Enter Budget Amount</Text>
+      <TextInput
+        style={styles.modalInput}
+        placeholder="Enter budget in ₹"
+        keyboardType="numeric"
+        value={budgetInput}
+        onChangeText={setBudgetInput}
+      />
+      <View style={styles.modalButtonContainer}>
+        <Button title="Save" onPress={handleSaveBudget} className='bg-secondary-200'/>
+        <Button title="Cancel" onPress={() => setModalVisible(false)} />
+      </View>
+    </View>
+  </View>
+</Modal>
+
     </SafeAreaView>
   );
 };
@@ -246,6 +282,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalInput: {
+    width: '100%',
+    borderBottomWidth: 1,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  
   chartContainer: {
     marginBottom: 20,
     alignItems: 'center',

@@ -137,13 +137,13 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
           style={[styles.typeButton, isPaid && styles.selectedButton]}
           onPress={() => setIsPaid(true)}
         >
-          <Text style={styles.buttonText}>Paid</Text>
+          <Text  style={[styles.buttonText, { color: '#000', opacity:0.5 }]}>Paid</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.typeButton, !isPaid && styles.selectedButton]}
           onPress={() => setIsPaid(false)}
         >
-          <Text style={styles.buttonText}>Unpaid</Text>
+          <Text  style={[styles.buttonText, { color: '#000', opacity:0.5 }]}>Unpaid</Text>
         </TouchableOpacity>
       </View>
 
@@ -152,7 +152,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories }) => {
           <Text style={styles.buttonText}>Add Expense</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-          <Text style={[styles.buttonText, { color: '#fff' }]}>Cancel</Text>
+          <Text style={[styles.buttonText, { color: '#000', opacity:0.5 }]}>Cancel</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -200,7 +200,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#444444',
     width: '100%',
-    height: 45,
+    height: 50,
+    paddingTop:0,
     marginBottom: 10,
     borderColor: '#ddd',
     opacity:0.6
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
   },
   typeButton: {
     borderWidth: 1,
-    borderColor: '#3DC2EC',
+    borderColor: '#ddd',
     width: '48%',
     height: 40,
     paddingHorizontal: 16,
@@ -229,20 +230,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedButton: {
-    backgroundColor: '#3DC2EC',
+    backgroundColor: 'green',
   },
   submitButton: {
-    backgroundColor: 'green',
+    backgroundColor: '#FF9C01',
     width: '48%',
     height: 40,
+    color:'white',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: 'red',
+    backgroundColor: '#fff',
     width: '48%',
     height: 40,
+    borderColor:'#ddd',
+    borderWidth:1,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -256,7 +260,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   datePickerButton: {
-    backgroundColor: '#3DC2EC',
+    backgroundColor: '#FF9C01',
     width: '100%',
     height: 40,
     borderRadius: 10,
@@ -265,7 +269,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: '#000',
+    color: '#fff',
     fontSize: 16,
     opacity:0.8
   },
