@@ -85,11 +85,11 @@ const Home = ({ navigation }) => {
         <View style={styles.card} className='h-44 p-5 flex-row justify-between items-center'>
           <View className='w-1/2'>
           <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Budget</Text>
-<Text className='font-psemibold'>₹{budget}</Text>
-<Text className='text-l text-gray-500 text-semibold font-pregular'>Spent Budget</Text>
-<Text className='font-psemibold'>₹{usedBudget}</Text>
-<Text className='text-l text-gray-500 text-semibold font-pregular'>Remaining Budget</Text>
-<Text className='font-psemibold'>₹{remainingBudget}</Text>
+            <Text className='font-psemibold'>₹{budget}</Text>
+            <Text className='text-l text-gray-500 text-semibold font-pregular'>Spent Budget</Text>
+            <Text className='font-psemibold'>₹{usedBudget}</Text>
+            <Text className='text-l text-gray-500 text-semibold font-pregular'>Remaining Budget</Text>
+            <Text className='font-psemibold'>₹{remainingBudget}</Text>
           </View>
           <View className='w-1/2'>
             <TouchableOpacity onPress={()=>{}}>
@@ -107,8 +107,8 @@ const Home = ({ navigation }) => {
             <TouchableOpacity style={styles.budgetButton}className='w-4/5 mt-1 h-6 ml-7 text-secondary flex-column text-center items-center justify-center'
               onPress={() => setModalVisible(true)} // Open modal
              >
-  <Text className='text-xs text-black font-semibold'>{amount === 0 ? '+ Add Budget' : 'Edit Budget'}</Text>
-</TouchableOpacity>
+            <Text className='text-xs text-black font-semibold'>{amount === 0 ? '+ Add Budget' : 'Edit Budget'}</Text>
+          </TouchableOpacity>
           </View>
         </View>
 
