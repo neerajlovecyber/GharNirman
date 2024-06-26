@@ -136,7 +136,7 @@ const Home = ({ navigation }) => {
 
           </View>
         </View>
-        <View className='pl-3 mt-2'>
+        <View className='pl-3 mt-2 pb-24'>
           <View className='flex-row justify-between'>
           <Text className='text-primary-200 font-pbold text-xl mb-2'>Categories</Text>
         

@@ -1,5 +1,3 @@
-// services/UserContext.js
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from './firebaseServices';
@@ -140,8 +138,38 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const handleAddCategory = async (categoryData) => {
+    if (!userId) return;
+
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const newCategory = {
+          id: categories.length + 1,
+          category: categoryData.name,
+          total_price: 0,
+          paid: 0,
+          icon: categoryData.emoji,
+          color: "#000000", // You can assign a default or random color
+          transactions: [],
+        };
+        const updatedCategories = [...userData.categories, newCategory];
+
+        await updateDoc(userDocRef, { categories: updatedCategories });
+        setCategories(updatedCategories);
+      } else {
+        throw new Error("User document does not exist.");
+      }
+    } catch (error) {
+      console.error("Error adding category:", error);
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense, usedBudget, remainingBudget }}>
+    <UserContext.Provider value={{ categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense, usedBudget, remainingBudget, handleAddCategory }}>
       {children}
     </UserContext.Provider>
   );
