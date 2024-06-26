@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, TextInput, FlatList, StyleSheet } from 'react-native';
+import { useUser } from '../services/userContext'; // Import the useUser hook
 
 const emojis = [
  '🏠', '🛠️', '🧱', '🔧', '🪚', '🔨', '🪛', '🪜', '🏗️', '🚧', '🪵', '🪓', '🔩', '🧰', '⚒️'
-
 ];
 
-const AddCategoryModal = ({ visible, onClose, onAddCategory }) => {
+const AddCategoryModal = ({ visible, onClose }) => {
+  const { handleAddCategory } = useUser(); // Use the handleAddCategory function from the context
   const [categoryName, setCategoryName] = useState('');
   const [selectedEmoji, setSelectedEmoji] = useState('');
 
   const handleAdd = () => {
     if (categoryName && selectedEmoji) {
-      onAddCategory({ name: categoryName, emoji: selectedEmoji });
+      handleAddCategory({ name: categoryName, emoji: selectedEmoji }); // Call handleAddCategory
       setCategoryName('');
       setSelectedEmoji('');
       onClose();
@@ -52,10 +53,10 @@ const AddCategoryModal = ({ visible, onClose, onAddCategory }) => {
             keyExtractor={(item, index) => index.toString()}
             horizontal
           />
-          <TouchableOpacity style={styles.addButton} className='bg-secondary-200'onPress={handleAdd}>
+          <TouchableOpacity style={styles.addButton} className='bg-secondary-200' onPress={handleAdd}>
             <Text style={styles.addButtonText}>Add</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} className='bg-secondary-200'onPress={onClose}>
+          <TouchableOpacity style={styles.cancelButton} className='bg-secondary-200' onPress={onClose}>
             <Text style={styles.cancelButtonText}>X</Text>
           </TouchableOpacity>
         </View>
@@ -77,8 +78,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     paddingBottom:35,
-
-    
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -97,7 +96,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
-    
   },
   emoji: {
     padding: 10,
@@ -118,7 +116,6 @@ const styles = StyleSheet.create({
   addButton: {
     paddingHorizontal:50,
     paddingVertical:10,
-    
     borderRadius: 5,
     marginTop: 10,
   },
@@ -131,7 +128,7 @@ const styles = StyleSheet.create({
     position:'absolute',
     width:30,
     height:30,
-   justifyContent: 'center',
+    justifyContent: 'center',
     alignItems: 'center',
     borderRadius:50,
     top:1,

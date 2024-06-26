@@ -21,8 +21,8 @@ const SingleCategoryComponent = ({ description, amount, totalAmount, quantity, d
   return (
     <View style={styles.transactionRow}>
       <View style={styles.leftColumn}>
-        <Text style={[styles.transactionText, styles.boldText]}>Description: {truncateDescription(description)}</Text>
-        <Text style={styles.transactionText}>Amount: ₹{amount.toFixed(2)}</Text>
+        <Text style={[styles.transactionText, styles.boldText]}>{truncateDescription(description)}</Text>
+        <Text style={styles.transactionText}>Price: ₹{amount.toFixed(2)}</Text>
         <Text style={styles.transactionText}>Quantity: {quantity}</Text>
       </View>
       <View style={styles.rightColumn}>

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Dimensions, Image, Button, TextInput } from 'react-native';
-import { PieChart, LineChart } from 'react-native-chart-kit';
+import { PieChart } from 'react-native-chart-kit';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Progress from 'react-native-progress';
 import CategoriesCard from '../../Components/CategoriesCard';
 import { useAuth } from "../../services/authContext";
 import AddComponent from '../../Components/AddComponent';
-import { db } from '../../services/firebaseServices';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { icons, images } from '../../constants';
 import { useUser } from '../../services/userContext';
 import AddCategoryModal from '../../Components/AddCategoryModal';
@@ -18,7 +16,7 @@ const Home = ({ navigation }) => {
   const [selectedSlice, setSelectedSlice] = useState(null);
   const [isAddComponentVisible, setAddComponentVisible] = useState(false);
   const [budgetInput, setBudgetInput] = useState('');
-  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense, usedbudget} = useUser();
+  const { categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense, usedBudget,remainingBudget} = useUser();
   const [modalCategoryVisible, setCategoryModalVisible] = useState(false);
 
   const openCategoryModal = () => {
@@ -41,20 +39,13 @@ const Home = ({ navigation }) => {
   
 
   const pieChartData = [
-    { name: 'Spent', population: totalPaid || 0, color: '#FF6969', legendFontColor: '#FF6969', legendFontSize: 15 },
-    { name: 'Remaining', population: totalUnpaid || 0, color: '#3572EF', legendFontColor: '#3572EF', legendFontSize: 15 },
+    { name: 'Spent', population: usedBudget || 0, color: '#FF6969', legendFontColor: '#FF6969', legendFontSize: 15 },
+    { name: 'Remaining', population: remainingBudget || 0, color: '#3572EF', legendFontColor: '#3572EF', legendFontSize: 15 },
   ];
   
   const screenWidth = Dimensions.get('window').width;
 
-  const lineChartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-    datasets: [
-      {
-        data: [50, 100, 150, 200, 250],
-      },
-    ],
-  };
+ 
 
   const chartConfig = {
     backgroundColor: '#3572EF',
@@ -93,12 +84,12 @@ const Home = ({ navigation }) => {
 
         <View style={styles.card} className='h-44 p-5 flex-row justify-between items-center'>
           <View className='w-1/2'>
-            <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Budget</Text>
-            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : '₹'}</Text>
-            <Text className='text-l text-gray-500 text-semibold font-pregular'>Spent Amount</Text>
-            <Text className='font-psemibold'>{usedbudget} {usedbudget === 0 ? '' : '₹'}</Text>
-            <Text className='text-l text-gray-500 text-semibold font-pregular'>Remaining Amount</Text>
-            <Text className='font-psemibold'>{amount} {amount === 0 ? '' : '₹'}</Text>
+          <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Budget</Text>
+<Text className='font-psemibold'>₹{budget}</Text>
+<Text className='text-l text-gray-500 text-semibold font-pregular'>Spent Budget</Text>
+<Text className='font-psemibold'>₹{usedBudget}</Text>
+<Text className='text-l text-gray-500 text-semibold font-pregular'>Remaining Budget</Text>
+<Text className='font-psemibold'>₹{remainingBudget}</Text>
           </View>
           <View className='w-1/2'>
             <TouchableOpacity onPress={()=>{}}>
@@ -116,7 +107,7 @@ const Home = ({ navigation }) => {
             <TouchableOpacity style={styles.budgetButton}className='w-4/5 mt-1 h-6 ml-7 text-secondary flex-column text-center items-center justify-center'
               onPress={() => setModalVisible(true)} // Open modal
              >
-  <Text className='text-xs text-black font-semibold'>{amount === 0 ? '+ Add amount' : 'Edit amount'}</Text>
+  <Text className='text-xs text-black font-semibold'>{amount === 0 ? '+ Add Budget' : 'Edit Budget'}</Text>
 </TouchableOpacity>
           </View>
         </View>
@@ -145,7 +136,7 @@ const Home = ({ navigation }) => {
 
           </View>
         </View>
-        <View className='pl-3 mt-2'>
+        <View className='pl-3 mt-2 pb-24'>
           <View className='flex-row justify-between'>
           <Text className='text-primary-200 font-pbold text-xl mb-2'>Categories</Text>
         

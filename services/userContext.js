@@ -1,5 +1,3 @@
-// services/UserContext.js
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from './firebaseServices';
@@ -7,25 +5,30 @@ import { useAuth } from './authContext';
 
 const UserContext = createContext();
 const initialCategories = [
-    { id: 1, category: "bricks", total_price: 0, paid: 0, icon: "🔨", color: "#FF5733", transactions: [] },
-    { id: 2, category: "cement", total_price: 0, paid: 0, icon: "🏗️", color: "#33FF57", transactions: [] },
-    { id: 3, category: "tiles", total_price: 0, paid: 0, icon: "🧱", color: "#3357FF", transactions: [] },
-    { id: 4, category: "wood", total_price: 0, paid: 0, icon: "🪵", color: "#FF33A1", transactions: [] },
-    { id: 5, category: "paints", total_price: 0, paid: 0, icon: "🎨", color: "#FF9F33", transactions: [] },
-    { id: 6, category: "steel", total_price: 0, paid: 0, icon: "⚙️", color: "#33FFF2", transactions: [] },
-    { id: 7, category: "glass", total_price: 0, paid: 0, icon: "🪟", color: "#9D33FF", transactions: [] },
-    { id: 8, category: "plumbing", total_price: 0, paid: 0, icon: "🚰", color: "#F2FF33", transactions: [] },
-    { id: 9, category: "electric", total_price: 0, paid: 0, icon: "🔌", color: "#FF33F2", transactions: [] },
-    { id: 10, category: "sand", total_price: 0, paid: 0, icon: "🏖️", color: "#33FFA8", transactions: [] },
-  ];
+  { id: 1, category: "bricks", total_price: 0, paid: 0, icon: "🔨", color: "#FF5733", transactions: [] },
+  { id: 2, category: "cement", total_price: 0, paid: 0, icon: "🏗️", color: "#33FF57", transactions: [] },
+  { id: 3, category: "tiles", total_price: 0, paid: 0, icon: "🧱", color: "#3357FF", transactions: [] },
+  { id: 4, category: "wood", total_price: 0, paid: 0, icon: "🪵", color: "#FF33A1", transactions: [] },
+  { id: 5, category: "paints", total_price: 0, paid: 0, icon: "🎨", color: "#FF9F33", transactions: [] },
+  { id: 6, category: "steel", total_price: 0, paid: 0, icon: "⚙️", color: "#33FFF2", transactions: [] },
+  { id: 7, category: "glass", total_price: 0, paid: 0, icon: "🪟", color: "#9D33FF", transactions: [] },
+  { id: 8, category: "plumbing", total_price: 0, paid: 0, icon: "🚰", color: "#F2FF33", transactions: [] },
+  { id: 9, category: "electric", total_price: 0, paid: 0, icon: "🔌", color: "#FF33F2", transactions: [] },
+  { id: 10, category: "sand", total_price: 0, paid: 0, icon: "🏖️", color: "#33FFA8", transactions: [] },
+];
+
+const initialBudget = 5000000;
+
 export const UserProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
-  const [budget, setBudget] = useState(0);
+  const [budget, setBudget] = useState(initialBudget);
   const [totalPaid, setTotalPaid] = useState(0);
   const [totalUnpaid, setTotalUnpaid] = useState(0);
+  const [usedBudget, setUsedBudget] = useState(0);
+  const [remainingBudget, setRemainingBudget] = useState(initialBudget);
   const { currentUser } = useAuth();
   const userId = currentUser?.uid;
-const [usedbudget,setusedbuget] =useState(0);
+
   useEffect(() => {
     if (userId) {
       initializeUserData(userId);
@@ -35,44 +38,52 @@ const [usedbudget,setusedbuget] =useState(0);
   useEffect(() => {
     calculatePaidAndUnpaidAmounts();
   }, [categories]);
-useEffect(()=> {
-  calculatetotalbudgetspend();
-},[categories]);
+
+  useEffect(() => {
+    calculateTotalBudgetSpent();
+  }, [categories]);
+
+  useEffect(() => {
+    setRemainingBudget(budget - usedBudget);
+  }, [budget, usedBudget]);
+
   const initializeUserData = async (userId) => {
     try {
       const userDocRef = doc(db, 'users', userId);
       const docSnap = await getDoc(userDocRef);
 
       if (!docSnap.exists()) {
-        await setDoc(userDocRef, { categories: initialCategories });
+        await setDoc(userDocRef, { categories: initialCategories, budget: initialBudget });
         setCategories(initialCategories);
+        setBudget(initialBudget);
+        setRemainingBudget(initialBudget);
       } else {
         const userData = docSnap.data();
         setCategories(userData.categories || initialCategories);
+        setBudget(userData.budget || initialBudget);
+        setRemainingBudget((userData.budget || initialBudget) - usedBudget);
       }
     } catch (error) {
       console.error("Error initializing user data:", error);
     }
   };
-  const calculatetotalbudgetspend = () => {
-    let spentamount = 0;
+
+  const calculateTotalBudgetSpent = () => {
+    let spentAmount = 0;
     categories.forEach(category => {
       category.transactions.forEach(transaction => {
         const price = parseFloat(transaction.totalPrice);
         if (!isNaN(price)) {
-          spentamount += price;
+          spentAmount += price;
         }
       });
     });
-  
-    setusedbuget(spentamount);
- 
+    setUsedBudget(spentAmount);
   };
 
   const calculatePaidAndUnpaidAmounts = () => {
     let paidTotal = 0;
     let unpaidTotal = 0;
-  
     categories.forEach(category => {
       category.transactions.forEach(transaction => {
         const price = parseFloat(transaction.totalPrice);
@@ -85,7 +96,6 @@ useEffect(()=> {
         }
       });
     });
-  
     setTotalPaid(paidTotal);
     setTotalUnpaid(unpaidTotal);
   };
@@ -128,8 +138,38 @@ useEffect(()=> {
     }
   };
 
+  const handleAddCategory = async (categoryData) => {
+    if (!userId) return;
+
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const newCategory = {
+          id: categories.length + 1,
+          category: categoryData.name,
+          total_price: 0,
+          paid: 0,
+          icon: categoryData.emoji,
+          color: "#000000", // You can assign a default or random color
+          transactions: [],
+        };
+        const updatedCategories = [...userData.categories, newCategory];
+
+        await updateDoc(userDocRef, { categories: updatedCategories });
+        setCategories(updatedCategories);
+      } else {
+        throw new Error("User document does not exist.");
+      }
+    } catch (error) {
+      console.error("Error adding category:", error);
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense,usedbudget}}>
+    <UserContext.Provider value={{ categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense, usedBudget, remainingBudget, handleAddCategory }}>
       {children}
     </UserContext.Provider>
   );
