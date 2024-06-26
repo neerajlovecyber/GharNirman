@@ -17,7 +17,7 @@ const initialCategories = [
   { id: 10, category: "sand", total_price: 0, paid: 0, icon: "🏖️", color: "#33FFA8", transactions: [] },
 ];
 
-const initialBudget = 5000000;
+const initialBudget = 0;
 
 export const UserProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
@@ -168,8 +168,83 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const handleEditExpense = async (categoryName, expenseIndex, updatedExpenseData) => {
+    if (!userId) return;
+
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const updatedCategories = userData.categories.map(category => {
+          if (category.category === categoryName) {
+            const transaction = category.transactions[expenseIndex];
+            if (transaction) {
+              const oldTotalPrice = transaction.totalPrice;
+              const newTotalPrice = parseFloat(updatedExpenseData.totalPrice);
+              category.transactions[expenseIndex] = {
+                ...transaction,
+                ...updatedExpenseData,
+                totalPrice: newTotalPrice,
+              };
+              if (transaction.isPaid) {
+                category.paid -= oldTotalPrice;
+                category.paid += newTotalPrice;
+              }
+              category.total_price -= oldTotalPrice;
+              category.total_price += newTotalPrice;
+            }
+          }
+          return category;
+        });
+
+        await updateDoc(userDocRef, { categories: updatedCategories });
+        setCategories(updatedCategories);
+      } else {
+        throw new Error("User document does not exist.");
+      }
+    } catch (error) {
+      console.error("Error editing expense:", error);
+    }
+  };
+
+  const handleDeleteExpense = async (categoryName, expenseIndex) => {
+    if (!userId) return;
+
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const updatedCategories = userData.categories.map(category => {
+          if (category.category === categoryName) {
+            const transaction = category.transactions[expenseIndex];
+            if (transaction) {
+              const totalPrice = transaction.totalPrice;
+              category.transactions.splice(expenseIndex, 1);
+              if (transaction.isPaid) {
+                category.paid -= totalPrice;
+              }
+              category.total_price -= totalPrice;
+            }
+          }
+          return category;
+        });
+
+        await updateDoc(userDocRef, { categories: updatedCategories });
+        setCategories(updatedCategories);
+      } else {
+        throw new Error("User document does not exist.");
+      }
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense, usedBudget, remainingBudget, handleAddCategory }}>
+    <UserContext.Provider value={{ categories, budget, totalPaid, totalUnpaid, setBudget, handleAddExpense, usedBudget, remainingBudget, handleAddCategory, handleEditExpense, handleDeleteExpense }}>
       {children}
     </UserContext.Provider>
   );
