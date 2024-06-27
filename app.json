@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/mainPic.png",
         "backgroundColor": "#1E1E2D"
       },
       "package": "com.neerajlovecyber.gharnirman"
