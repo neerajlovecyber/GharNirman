@@ -67,6 +67,10 @@ const Home = ({ navigation }) => {
     }
   };
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return string;
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
   
   
   return (
@@ -80,16 +84,17 @@ const Home = ({ navigation }) => {
             <Image source={images.profile} resizeMode="contain" style={styles.icon} className='border-r-5 w-6 h-4' />
           </TouchableOpacity>
         </View>
-        <Text className='text-2xl text-secondary-200 text-semibold mt-2 ml-5 font-pextrabold'>Hi {displayName}</Text>
-
+        <Text className='text-2xl text-secondary-200 mt-2 ml-5 font-pbold'>
+         Hi, {capitalizeFirstLetter(displayName)}
+       </Text>
         <View style={styles.card} className='h-44 p-5 flex-row justify-between items-center'>
           <View className='w-1/2'>
           <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Budget</Text>
-            <Text className='font-psemibold'>₹{budget}</Text>
+            <Text className='font-psemibold opacity-70'>₹{budget}</Text>
             <Text className='text-l text-gray-500 text-semibold font-pregular'>Spent Budget</Text>
-            <Text className='font-psemibold'>₹{usedBudget}</Text>
-            <Text className='text-l text-gray-500 text-semibold font-pregular'>Remaining Budget</Text>
-            <Text className='font-psemibold'>₹{remainingBudget}</Text>
+            <Text className='font-psemibold opacity-80'>₹{usedBudget}</Text>
+            <Text className='text-l text-gray-500 text-semibold font-pregular '>Remaining Budget</Text>
+            <Text className='font-psemibold opacity-80'>₹{remainingBudget}</Text>
           </View>
           <View className='w-1/2'>
             <TouchableOpacity onPress={()=>{}}>
@@ -107,7 +112,7 @@ const Home = ({ navigation }) => {
             <TouchableOpacity style={styles.budgetButton}className='w-4/5 mt-1 h-6 ml-7 text-secondary flex-column text-center items-center justify-center'
               onPress={() => setModalVisible(true)} // Open modal
              >
-            <Text className='text-xs text-black font-semibold'>{amount === 0 ? '+ Add Budget' : 'Edit Budget'}</Text>
+            <Text className='text-xs text-white opacity-90 font-psemibold'>{amount === 0 ? '+ Add Budget' : 'Edit Budget'}</Text>
           </TouchableOpacity>
           </View>
         </View>
@@ -116,11 +121,11 @@ const Home = ({ navigation }) => {
           <View className='flex-row'>
             <View className='w-1/2'>
               <Text className='text-l text-gray-500 text-semibold font-pregular'>Total Paid</Text>
-              <Text className='font-psemibold'>{totalPaid ? totalPaid : 0} {totalPaid === 0 ? '' : '₹'}</Text>
+              <Text className='font-psemibold opacity-80'>{totalPaid ? totalPaid : 0} {totalPaid === 0 ? '' : '₹'}</Text>
             </View>
             <View className='w-1/2'>
               <Text className='text-l text-gray-500 text-semibold font-pregular pl-7'>Total Unpaid</Text>
-              <Text className='font-psemibold pl-7'>{totalUnpaid? totalUnpaid:0} {totalUnpaid === 0 ? '' : '₹'}</Text>
+              <Text className='font-psemibold pl-7 opacity-80'>{totalUnpaid? totalUnpaid:0} {totalUnpaid === 0 ? '' : '₹'}</Text>
             </View>
           </View>
           <View className='w-full mt-4'>
@@ -128,8 +133,8 @@ const Home = ({ navigation }) => {
               progress={totalPaid !== 0 ? totalPaid / (totalPaid + totalUnpaid) : 0}
               width={Dimensions.get('window').width - 60}
               height={8}
-              color="#5AB2FF"
-              unfilledColor="#CAF4FF"
+              color="#667BC6"
+              unfilledColor="#F5F7F8"
               borderWidth={0}
               borderRadius={5}
           />
@@ -138,10 +143,10 @@ const Home = ({ navigation }) => {
         </View>
         <View className='pl-3 mt-2 pb-24'>
           <View className='flex-row justify-between'>
-          <Text className='text-primary-200 font-pbold text-xl mb-2'>Categories</Text>
+          <Text className='text-primary-200 font-psemibold text-xl mb-2 opacity-80'>Categories</Text>
         
           <TouchableOpacity className='mb-2 pr-8' onPress={openCategoryModal}>
-              <Image source={icons.plus} resizeMode='contain' className='w-8 h-8' />
+              <Image source={icons.plus} resizeMode='contain' className='w-7 h-7' />
             </TouchableOpacity>
             <AddCategoryModal
               visible={modalCategoryVisible}
@@ -200,7 +205,7 @@ const Home = ({ navigation }) => {
         </View>
       </Modal>
       {/* Budget Modal */}
-<Modal
+      <Modal
   animationType="slide"
   transparent={true}
   visible={modalVisible}
@@ -208,7 +213,7 @@ const Home = ({ navigation }) => {
 >
   <View style={styles.modalOverlay}>
     <View style={styles.modalContainer}>
-      <Text style={styles.modalTitle}>Enter Budget Amount</Text>
+      <Text style={styles.modalTitle} className='text-gray-800 font-pmedium'>Enter Budget Amount</Text>
       <TextInput
         style={styles.modalInput}
         placeholder="Enter budget in ₹"
@@ -217,12 +222,18 @@ const Home = ({ navigation }) => {
         onChangeText={setBudgetInput}
       />
       <View style={styles.modalButtonContainer}>
-        <Button title="Save" onPress={handleSaveBudget} className='bg-secondary-200'/>
-        <Button title="Cancel" onPress={() => setModalVisible(false)} />
+       
+        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButtonCancel}>
+          <Text className='text-black-100 font-pregular text-md  items-center'>Cancel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleSaveBudget} style={styles.modalButtonSave}>
+          <Text  className='text-white font-pregular text- text-center items-center'>Save</Text>
+        </TouchableOpacity>
       </View>
     </View>
   </View>
 </Modal>
+
 
     </SafeAreaView>
   );
@@ -268,11 +279,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 20,
   },
-  budgetButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-  },
+  
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
@@ -288,22 +295,47 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   modalInput: {
     width: '100%',
-    borderBottomWidth: 1,
+    borderWidth: 1,
+    borderColor:'#ddd',
+    borderRadius:8,
     marginBottom: 20,
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 6,
   },
   modalButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
   },
-  
+  modalButtonSave: {
+    backgroundColor: '#FF8E01',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
+  modalButtonCancel: {
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    flex: 1,
+    borderWidth:1,
+    borderColor:'#ddd',
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+  },
   chartContainer: {
     marginBottom: 20,
     alignItems: 'center',

@@ -3,8 +3,11 @@ import { View, Text, Modal, TouchableOpacity, TextInput, FlatList, StyleSheet } 
 import { useUser } from '../services/userContext'; // Import the useUser hook
 
 const emojis = [
- '🏠', '🛠️', '🧱', '🔧', '🪚', '🔨', '🪛', '🪜', '🏗️', '🚧', '🪵', '🪓', '🔩', '🧰', '⚒️'
-];
+  '🏠', '🛠️', '🧱', '🔧', '🪚', '🔨', '🪛', '🪜', '🏗️', '🚧', '🪵', '🪓', '🔩', '🧰', '⚒️',
+  '🚪', '🪦', '🧯', '🛢️', '🧲', '🚂', '🪚', '🚛'
+ ];
+ 
+ 
 
 const AddCategoryModal = ({ visible, onClose }) => {
   const { handleAddCategory } = useUser(); // Use the handleAddCategory function from the context
@@ -12,8 +15,9 @@ const AddCategoryModal = ({ visible, onClose }) => {
   const [selectedEmoji, setSelectedEmoji] = useState('');
 
   const handleAdd = () => {
-    if (categoryName && selectedEmoji) {
-      handleAddCategory({ name: categoryName, emoji: selectedEmoji }); // Call handleAddCategory
+    if (categoryName.trim() && selectedEmoji) {
+      const trimmedName = categoryName.trim().slice(0, 15); // Trim to 15 characters
+      handleAddCategory({ name: trimmedName, emoji: selectedEmoji }); // Call handleAddCategory with trimmed name
       setCategoryName('');
       setSelectedEmoji('');
       onClose();
@@ -29,14 +33,14 @@ const AddCategoryModal = ({ visible, onClose }) => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle} className='text-secondary-200 font-psemibold'>Add Category</Text>
+          <Text style={styles.modalTitle} className='text-gray-700 font-pmedium'>Add Category</Text>
           <TextInput
             style={styles.input}
             placeholder="Category Name"
             value={categoryName}
             onChangeText={setCategoryName}
           />
-          <Text style={styles.modalTitle}  className='text-secondary-200 font-psemibold'>Select Emoji</Text>
+          <Text style={styles.modalTitle}  className='text-gray-700 font-pmedium'>Select Emoji</Text>
           <FlatList
             data={emojis}
             renderItem={({ item }) => (
@@ -107,8 +111,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   selectedEmoji: {
-    backgroundColor: '#3572EF',
-    borderColor: '#3572EF',
+    backgroundColor: 'green',
+    
   },
   emojiText: {
     fontSize: 24,

@@ -35,10 +35,10 @@ const TransactionOptionsModal = ({ visible, transaction, onClose, onDelete, onEd
             <Text style={styles.optionButtonText}>Delete</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.optionButton}
+            style={styles.closeButton}
             onPress={onClose}
           >
-            <Text style={styles.optionButtonText}>Cancel</Text>
+            <Text style={styles.optionButtonText}>X</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: '80%',
+    width: '60%',
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 20,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   optionButton: {
     width: '100%',
-    padding: 15,
+    padding: 10,
     backgroundColor: '#FF8F00',
     borderRadius: 5,
     alignItems: 'center',
@@ -77,6 +77,18 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
+  closeButton:{
+    marginTop: 10,
+    position:'absolute',
+    width:30,
+    height:30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius:50,
+    top:1,
+    right:10,
+    backgroundColor:'#FF8E01'
+  }
 });
 
 export default TransactionOptionsModal;

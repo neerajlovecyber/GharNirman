@@ -27,7 +27,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories, initial
   }, [initialData]);
 
   useEffect(() => {
-    if (selectedCategory && !initialData) { // Do not update if in edit mode
+    if (selectedCategory && !initialData) { 
       setCategory(selectedCategory);
     }
   }, [selectedCategory, initialData]);
@@ -180,7 +180,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories, initial
       />
 
       <TouchableOpacity style={styles.datePickerButton} onPress={showDatepicker}>
-        <Text style={styles.buttonText}>
+        <Text style={{color:'grey'}}>
           {purchaseDate.toLocaleDateString()}
         </Text>
       </TouchableOpacity>
@@ -201,7 +201,7 @@ const AddComponent = ({ onClose, onSubmit, selectedCategory, categories, initial
           <Text style={[styles.buttonText, { color: '#000', opacity: 0.5 }]}>Paid</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.typeButton, !isPaid && styles.selectedButton]}
+          style={[styles.typeButton, !isPaid && styles.unpaidSelectedButton]}
           onPress={() => setIsPaid(false)}
         >
           <Text style={[styles.buttonText, { color: '#000', opacity: 0.5 }]}>Unpaid</Text>
@@ -293,6 +293,12 @@ const styles = StyleSheet.create({
   },
   selectedButton: {
     backgroundColor: 'green',
+    borderWidth:0,
+
+  },
+  unpaidSelectedButton:{
+    backgroundColor: 'red',
+    borderWidth:0,
   },
   submitButton: {
     backgroundColor: '#FF9C01',
@@ -316,7 +322,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 14,
-    fontWeight: 'bold',
   },
   datePickerButton: {
     backgroundColor: '#fff',
@@ -326,6 +331,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     marginBottom: 10,
+    color:'black'
   }
 });
 
