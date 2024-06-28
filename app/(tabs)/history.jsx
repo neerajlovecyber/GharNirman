@@ -65,7 +65,7 @@ const History = () => {
 
     return (
       <View style={styles.transactionContainer}>
-        {showDate && <Text style={styles.dateText}>{capitalizeFirstLetter(item.category)}</Text>}
+        {showDate && <Text style={styles.categoryText}>{capitalizeFirstLetter(item.category)}</Text>}
         <SingleCategoryComponent
           description={item.description}
           amount={item.price}
@@ -90,7 +90,7 @@ const History = () => {
         onChangeText={setSearchText}
       />
       <View style={styles.filterRow}>
-      <View className="rounded-lg bg-white w-1/2 m-0 p-0">
+      <View className="rounded-lg bg-white w-1/2 h-12 m-0 p-0">
 
         <Picker
           selectedValue={selectedCategory}
@@ -103,7 +103,7 @@ const History = () => {
           ))}
         </Picker>
         </View>
-          <View className="rounded-lg bg-white w-[47%] ml-2 p-0">
+          <View className="rounded-lg bg-white w-[47%] h-12 ml-2 p-0" >
         <Picker 
           selectedValue={selectedStatus}
           style={styles.picker}
@@ -140,31 +140,38 @@ const styles = StyleSheet.create({
   
   },
   searchInput: {
-    height: 50,
-    borderColor: '#ddd',
+    height: 45,
+    // borderColor: '#ddd',
     backgroundColor:'#fff',
-    borderWidth: 1,
-    borderRadius: 12,
+    // borderWidth: 1,
+    borderRadius: 10,
     paddingHorizontal: 10,
     margin: 10,
-    marginTop:15
+    marginTop:15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   filterRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
     padding:10
+    
   },
   picker: {
     width: '100%',
-
+    height:30,
+    
     
   },
   transactionContainer: {
-    marginBottom: 10,
+    marginBottom: 5,
   },
-  dateText: {
-    fontSize: 15,
+  categoryText: {
+    fontSize: 14,
     color: 'gray',
     marginBottom: 3,
     marginLeft: 10,

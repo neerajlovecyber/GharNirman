@@ -168,37 +168,27 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const handleEditExpense = async (categoryName, expenseIndex, updatedExpenseData) => {
+  const handleEditExpense = async (categoryName, expenseIndex, updatedExpense) => {
     if (!userId) return;
-
+  
     try {
       const userDocRef = doc(db, 'users', userId);
       const userDoc = await getDoc(userDocRef);
-
+  
       if (userDoc.exists()) {
         const userData = userDoc.data();
         const updatedCategories = userData.categories.map(category => {
           if (category.category === categoryName) {
-            const transaction = category.transactions[expenseIndex];
-            if (transaction) {
-              const oldTotalPrice = transaction.totalPrice;
-              const newTotalPrice = parseFloat(updatedExpenseData.totalPrice);
-              category.transactions[expenseIndex] = {
-                ...transaction,
-                ...updatedExpenseData,
-                totalPrice: newTotalPrice,
-              };
-              if (transaction.isPaid) {
-                category.paid -= oldTotalPrice;
-                category.paid += newTotalPrice;
-              }
-              category.total_price -= oldTotalPrice;
-              category.total_price += newTotalPrice;
+            category.transactions[expenseIndex] = updatedExpense;
+            // Update totals as needed, assuming updatedExpense has the new values
+            category.total_price += updatedExpense.totalPrice - category.transactions[expenseIndex].totalPrice;
+            if (updatedExpense.isPaid) {
+              category.paid += updatedExpense.totalPrice - category.transactions[expenseIndex].totalPrice;
             }
           }
           return category;
         });
-
+  
         await updateDoc(userDocRef, { categories: updatedCategories });
         setCategories(updatedCategories);
       } else {
@@ -208,6 +198,7 @@ export const UserProvider = ({ children }) => {
       console.error("Error editing expense:", error);
     }
   };
+  
 
   const handleDeleteExpense = async (categoryName, expenseIndex) => {
     if (!userId) return;

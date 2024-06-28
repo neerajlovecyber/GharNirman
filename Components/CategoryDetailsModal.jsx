@@ -2,21 +2,85 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
 import AddComponent from './AddComponent';
 import SingleCategoryComponent from './SingleCategoryComponent';
+import TransactionOptionsModal from './TransactionsOptionModal';
 import { useUser } from '../services/userContext';
 
 const CategoryDetailsModal = ({ visible, category, onClose }) => {
   const [transactions, setTransactions] = useState([]);
   const [addModalVisible, setAddModalVisible] = useState(false);
-  const { categories, handleAddExpense } = useUser();
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const { categories, handleAddExpense, handleEditExpense, handleDeleteExpense } = useUser(); // Assuming useUser provides necessary functions
 
+  // Update transactions when category changes
   useEffect(() => {
-    if (category.transactions) {
+    if (category && category.transactions) {
       const sortedTransactions = [...category.transactions].sort((a, b) => new Date(b.purchaseDate) - new Date(a.purchaseDate));
       setTransactions(sortedTransactions);
+    } else {
+      setTransactions([]);
     }
   }, [category]);
 
-  const renderTransactionItem = ({ item }) => (
+  // Function to handle adding a new transaction
+  const handleNewTransaction = (newTransaction) => {
+    const updatedTransactions = [newTransaction, ...transactions];
+    setTransactions(updatedTransactions); // Update local state
+    handleAddExpense(newTransaction); // Call global update function
+    closeAddModal();
+  };
+
+  // Function to handle editing an existing transaction
+  const handleEditTransaction = (editedTransaction) => {
+    if (!selectedTransaction) return;
+
+    const { index } = selectedTransaction;
+    const updatedTransactions = transactions.map((transaction, i) =>
+      i === index ? editedTransaction : transaction
+    );
+    setTransactions(updatedTransactions); // Update local state
+    handleEditExpense(category.category, index, editedTransaction); // Call global update function
+    closeAddModal();
+  };
+
+  // Function to handle deleting an existing transaction
+  const handleDeleteTransaction = async () => {
+    if (!selectedTransaction) return;
+
+    const { index } = selectedTransaction;
+    await handleDeleteExpense(category.category, index); // Call global update function
+
+    const updatedTransactions = transactions.filter((_, i) => i !== index);
+    setTransactions(updatedTransactions); // Update local state
+    closeOptionsModal();
+  };
+
+  // Function to open the modal for adding/editing a transaction
+  const openAddModal = (transaction = null) => {
+    setSelectedTransaction(transaction);
+    setAddModalVisible(true);
+  };
+
+  // Function to close the modal for adding/editing a transaction
+  const closeAddModal = () => {
+    setAddModalVisible(false);
+    setSelectedTransaction(null);
+  };
+
+  // Function to open the modal for options (edit/delete) of a transaction
+  const openOptionsModal = (transaction, index) => {
+    setSelectedTransaction({ ...transaction, index });
+    setOptionsModalVisible(true);
+  };
+
+  // Function to close the modal for options (edit/delete) of a transaction
+  const closeOptionsModal = () => {
+    setOptionsModalVisible(false);
+    setSelectedTransaction(null);
+  };
+
+  // Render function for each transaction item in the list
+  const renderTransactionItem = ({ item, index }) => (
     <SingleCategoryComponent
       description={item.description}
       amount={item.price}
@@ -24,23 +88,9 @@ const CategoryDetailsModal = ({ visible, category, onClose }) => {
       quantity={item.quantity}
       date={item.purchaseDate}
       status={item.isPaid ? 'Paid' : 'Unpaid'}
+      onOptionsPress={() => openOptionsModal(item, index)}
     />
   );
-
-  const openAddModal = () => {
-    setAddModalVisible(true);
-  };
-
-  const closeAddModal = () => {
-    setAddModalVisible(false);
-  };
-
-  const handleNewTransaction = (newTransaction) => {
-    const updatedTransactions = [newTransaction, ...transactions];
-    setTransactions(updatedTransactions); // Update local state
-    handleAddExpense(newTransaction); // Call global update function
-    closeAddModal();
-  };
 
   return (
     <Modal
@@ -70,7 +120,7 @@ const CategoryDetailsModal = ({ visible, category, onClose }) => {
             <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.fixedButton} onPress={openAddModal}>
+          <TouchableOpacity style={styles.fixedButton} onPress={() => openAddModal()}>
             <Text style={styles.fixedButtonText}>+</Text>
           </TouchableOpacity>
 
@@ -85,8 +135,9 @@ const CategoryDetailsModal = ({ visible, category, onClose }) => {
                 <AddComponent
                   categories={categories.map(cat => cat.category)}
                   selectedCategory={category.category}
-                  onSubmit={handleNewTransaction}
+                  onSubmit={selectedTransaction ? handleEditTransaction : handleNewTransaction}
                   onClose={closeAddModal}
+                  initialData={selectedTransaction}
                 />
               </View>
               <TouchableOpacity style={styles.closeButton1} onPress={closeAddModal}>
@@ -94,6 +145,18 @@ const CategoryDetailsModal = ({ visible, category, onClose }) => {
               </TouchableOpacity>
             </View>
           </Modal>
+
+          <TransactionOptionsModal
+              visible={optionsModalVisible}
+              transaction={selectedTransaction} // Ensure selectedTransaction is correctly set
+              onClose={closeOptionsModal}
+              onDelete={handleDeleteTransaction}
+              onEdit={() => {
+                closeOptionsModal();
+                openAddModal(selectedTransaction);
+              }}
+            />
+
 
         </View>
       </View>
