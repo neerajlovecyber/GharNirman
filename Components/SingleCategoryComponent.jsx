@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-const SingleCategoryComponent = ({ description, amount, totalAmount, quantity, date, status }) => {
+const SingleCategoryComponent = ({ description, amount, totalAmount, quantity, date, status, onOptionsPress }) => {
   const statusColor = status === 'Paid' ? '#4CAF50' : '#F44336';
 
   // Function to format date to 'YYYY-MM-DD'
@@ -25,13 +25,20 @@ const SingleCategoryComponent = ({ description, amount, totalAmount, quantity, d
         <Text style={styles.transactionText}>Price: ₹{amount.toFixed(2)}</Text>
         <Text style={styles.transactionText}>Quantity: {quantity}</Text>
       </View>
-      <View style={styles.rightColumn}>
+      <View style={styles.midColumn}>
         <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
           <Text style={styles.statusText}>{status}</Text>
         </View>
         <Text style={styles.transactionText}>Date: {formatDate(date)}</Text>
         <Text style={styles.transactionText}>Total: ₹{totalAmount ? totalAmount.toFixed(2) : 'N/A'}</Text>
       </View>
+      <View style={styles.rightColumn}> 
+        <TouchableOpacity
+          style={styles.optionsButton}
+          onPress={onOptionsPress}
+        >
+          <Text style={styles.optionsButtonText}>⋮</Text>
+        </TouchableOpacity></View>
     </View>
   );
 };
@@ -51,12 +58,15 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
   },
+  midColumn: {
+    
+  },
   rightColumn: {
     alignItems: 'flex-end',
   },
   transactionText: {
-    fontSize: 14,
-    opacity:0.8
+    fontSize: 12,
+    opacity: 0.8,
   },
   boldText: {
     fontWeight: '500',
@@ -72,6 +82,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: '600',
+  },
+  optionsButton: {
+    paddingLeft:15,
+    paddingTop:12,
+  },
+  optionsButtonText: {
+    fontSize: 20,
+    color: '#FF8F00',
   },
 });
 
