@@ -2,11 +2,10 @@
   "expo": {
     "name": "GharNirman",
     "slug": "gharnirman",
-    "scheme": "aora",
-    "version": "1.0.0",
+    "scheme": "gharnirman",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/mainPic.png",
-    "offline": true,
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/mainPic.png",
@@ -18,15 +17,24 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/mainPic.png",
         "backgroundColor": "#1E1E2D"
-      }
+      },
+      "package": "com.neerajlovecyber.gharnirman"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "05e25c64-1f1c-4ee7-ad0f-efc15f7536e9"
+      }
+    }
   }
 }
